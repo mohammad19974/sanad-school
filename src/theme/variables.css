@@ -1,0 +1,25 @@
+/* متغيرات Ionic — مزامنة مع tokens.ts للحصول على لون موحّد عبر مكوّنات Ionic */
+
+:root {
+  --ion-color-primary:           #4A7C59;
+  --ion-color-primary-rgb:       74,124,89;
+  --ion-color-primary-contrast:  #ffffff;
+  --ion-color-primary-shade:     #2E5138;
+  --ion-color-primary-tint:      #7DB88A;
+
+  --ion-color-danger:            #E53935;
+  --ion-color-danger-rgb:        229,57,53;
+  --ion-color-danger-contrast:   #ffffff;
+  --ion-color-danger-shade:      #c92e2b;
+  --ion-color-danger-tint:       #e95450;
+
+  --ion-color-success:           #4CAF50;
+  --ion-color-warning:           #f5c300;
+
+  --ion-font-family: 'Tajawal', sans-serif;
+  --ion-background-color: #F5EED8;
+  --ion-text-color: #2C3B2E;
+
+  --sanad-bg-card: #FDFAF3;
+  --sanad-text-muted: #7A8C7C;
+}

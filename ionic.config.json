@@ -1,0 +1,7 @@
+{
+  "name": "sanad",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

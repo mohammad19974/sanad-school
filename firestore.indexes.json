@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "shelters",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "active", "order": "ASCENDING" },
+        { "fieldPath": "type",   "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "sosRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "studentId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
