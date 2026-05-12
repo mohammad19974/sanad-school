@@ -20,6 +20,15 @@ import './theme/global.css';
 
 import App from './App';
 
+// تسجيل Service Worker — لازم لإشعارات المتصفّح وللعمل offline
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => console.info('[Sanad] SW مُسجَّل', reg.scope))
+      .catch((err) => console.warn('[Sanad] فشل تسجيل SW:', err));
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

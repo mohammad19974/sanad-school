@@ -1,0 +1,55 @@
+{
+  "name": "سند — تطبيق الطوارئ المدرسية",
+  "short_name": "سند",
+  "description": "تطبيق طوارئ للطلاب ذوي الإعاقة — اطلب النجدة بلمسة، تواصل مع منسّق طوارئ مدرستك، وابقَ هادئاً.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5EED8",
+  "theme_color": "#4A7C59",
+  "categories": ["health", "education", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "طلب نجدة فوري",
+      "short_name": "نجدة",
+      "description": "اضغط لإرسال طلب SOS",
+      "url": "/tabs/home",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "مركز التهدئة",
+      "short_name": "تهدئة",
+      "url": "/tabs/calm",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

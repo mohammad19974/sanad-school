@@ -1,4 +1,5 @@
-// التوجيه الرئيسي — auth، tabs، صفحات الألعاب
+// التوجيه الرئيسي — auth، tabs الطالب، tabs المنسّق، صفحات الألعاب
+// التوجيه يعتمد على دور المستخدم
 
 import type { FC } from 'react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -6,23 +7,94 @@ import {
   IonRouterOutlet, IonTabs, IonTabBar, IonTabButton,
   IonLabel,
 } from '@ionic/react';
-import { Route, Redirect, Switch } from 'react-router-dom';
+// ⚠️ ملاحظة مهمّة من وثائق Ionic:
+// "Switch will not function as expected inside IonRouterOutlet"
+// IonRouterOutlet يتولّى مهمّة اختيار الـ Route المُطابقة (سلوك Switch-like مبنيّ بداخله).
+// لذا لا نستخدم <Switch> هنا — Routes توضع مباشرة كأبناء لـ IonRouterOutlet.
+import { Route, Redirect, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
+import { useProfileContext } from '../context/ProfileContext';
+import { useChatThreads } from '../hooks/useChatThreads';
 
 import { LoginPage } from '../pages/auth/LoginPage';
+import { RegisterPage } from '../pages/auth/RegisterPage';
 import { OtpPage } from '../pages/auth/OtpPage';
+import { OnboardingPage } from '../pages/OnboardingPage';
+import { SplashScreen } from '../components/SplashScreen';
+import { useOnboarding } from '../hooks/useOnboarding';
 import { HomePage } from '../pages/HomePage';
 import { MapPage } from '../pages/MapPage';
 import { CalmPage } from '../pages/CalmPage';
 import { ContactPage } from '../pages/ContactPage';
 import { ProfilePage } from '../pages/ProfilePage';
+import { StudentChatPage } from '../pages/StudentChatPage';
+import { StudentChatListPage } from '../pages/StudentChatListPage';
 import { SnakeGamePage } from '../pages/games/SnakeGamePage';
 import { MemoryGamePage } from '../pages/games/MemoryGamePage';
+import { StaffDashboardPage } from '../pages/staff/StaffDashboardPage';
+import { StaffSOSDetailPage } from '../pages/staff/StaffSOSDetailPage';
+import { StaffChatPage } from '../pages/staff/StaffChatPage';
+import { ChatListPage } from '../pages/staff/ChatListPage';
+import { StaffProfilePage } from '../pages/staff/StaffProfilePage';
 
-import { Icon } from '../ui/Icon';
+import { Icon, type IconName } from '../ui/Icon';
 import { colors, fontFamily } from '../theme/tokens';
 
-const Tabs: FC = () => (
+// ════════════════════════════════════════════════════
+// تابات الطالب
+// ════════════════════════════════════════════════════
+
+const STUDENT_TABS: { id: string; label: string; icon: IconName; href: string }[] = [
+  { id: 'home',    label: 'الرئيسية', icon: 'shield', href: '/tabs/home' },
+  { id: 'map',     label: 'الخريطة',  icon: 'map',    href: '/tabs/map' },
+  { id: 'calm',    label: 'تهدئة',    icon: 'calm',   href: '/tabs/calm' },
+  { id: 'contact', label: 'تواصل',    icon: 'phone',  href: '/tabs/contact' },
+  { id: 'profile', label: 'حسابي',    icon: 'user',   href: '/tabs/profile' },
+];
+
+// خريطة المسارات الفرعيّة → التاب الذي يبقى مُحدَّداً
+// مثال: /staff/sos/abc → tab "dashboard" (لأن المستخدم جاء من Dashboard)
+const NESTED_TAB_PREFIXES: Record<string, string> = {
+  '/staff/sos/':   'dashboard',
+  '/staff/chats/': 'chats',
+};
+
+const tabFromPath = (path: string, prefix: string): string => {
+  // أولاً: المسارات الفرعيّة المعروفة (مثل /staff/sos/:id)
+  for (const [pfx, tab] of Object.entries(NESTED_TAB_PREFIXES)) {
+    if (path.startsWith(pfx)) return tab;
+  }
+  // ثانياً: المقطع الأوّل بعد الـ prefix
+  const re = new RegExp(`^${prefix}/([^/]+)`);
+  const m = path.match(re);
+  return m ? m[1] : '';
+};
+
+const StudentTabBar: FC = () => {
+  const location = useLocation();
+  const selected = tabFromPath(location.pathname, '/tabs') || 'home';
+  return (
+    <IonTabBar
+      slot="bottom"
+      selectedTab={selected}
+      style={{
+        '--background': colors.bgCard,
+        '--color': colors.textLight,
+        '--color-selected': colors.primary,
+        fontFamily,
+      }}
+    >
+      {STUDENT_TABS.map((t) => (
+        <IonTabButton key={t.id} tab={t.id} href={t.href}>
+          <Icon name={t.icon} size={22} />
+          <IonLabel>{t.label}</IonLabel>
+        </IonTabButton>
+      ))}
+    </IonTabBar>
+  );
+};
+
+const StudentTabs: FC = () => (
   <IonTabs>
     <IonRouterOutlet>
       <Route exact path="/tabs/home"    component={HomePage} />
@@ -32,71 +104,145 @@ const Tabs: FC = () => (
       <Route exact path="/tabs/profile" component={ProfilePage} />
       <Route exact path="/tabs"><Redirect to="/tabs/home" /></Route>
     </IonRouterOutlet>
-    <IonTabBar slot="bottom" style={{ '--background': colors.bgCard, fontFamily }}>
-      <IonTabButton tab="home" href="/tabs/home">
-        <Icon name="shield" size={22} />
-        <IonLabel>الرئيسية</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="map" href="/tabs/map">
-        <Icon name="map" size={22} />
-        <IonLabel>الخريطة</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="calm" href="/tabs/calm">
-        <Icon name="calm" size={22} />
-        <IonLabel>تهدئة</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="contact" href="/tabs/contact">
-        <Icon name="phone" size={22} />
-        <IonLabel>تواصل</IonLabel>
-      </IonTabButton>
-      <IonTabButton tab="profile" href="/tabs/profile">
-        <Icon name="user" size={22} />
-        <IonLabel>حسابي</IonLabel>
-      </IonTabButton>
-    </IonTabBar>
+    <StudentTabBar />
   </IonTabs>
 );
 
-export const AppRoutes: FC = () => {
-  const { user, loading } = useAuthContext();
+// ════════════════════════════════════════════════════
+// تابات المنسّق
+// ════════════════════════════════════════════════════
 
-  if (loading) {
-    return (
-      <div style={{
-        height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: colors.bg, color: colors.primary, fontFamily, fontSize: 14,
-      }}>
-        جاري التحميل...
-      </div>
-    );
+const STAFF_TABS: { id: string; label: string; icon: IconName; href: string }[] = [
+  { id: 'dashboard', label: 'الطلبات',  icon: 'shield', href: '/staff/dashboard' },
+  { id: 'chats',     label: 'محادثات', icon: 'phone',  href: '/staff/chats' },
+  { id: 'profile',   label: 'حسابي',   icon: 'user',   href: '/staff/profile' },
+];
+
+const StaffTabBar: FC = () => {
+  const location = useLocation();
+  const { user } = useAuthContext();
+  const { totalUnread } = useChatThreads(user?.uid, 'staff');
+  const selected = tabFromPath(location.pathname, '/staff') || 'dashboard';
+
+  return (
+    <IonTabBar
+      slot="bottom"
+      selectedTab={selected}
+      style={{
+        '--background': colors.bgCard,
+        '--color': colors.textLight,
+        '--color-selected': colors.primary,
+        fontFamily,
+      }}
+    >
+      {STAFF_TABS.map((t) => (
+        <IonTabButton key={t.id} tab={t.id} href={t.href}>
+          <div style={{ position: 'relative' }}>
+            <Icon name={t.icon} size={22} />
+            {t.id === 'chats' && totalUnread > 0 && (
+              <span style={{
+                position: 'absolute', top: -4, right: -8,
+                minWidth: 16, height: 16, padding: '0 4px',
+                borderRadius: 8, background: colors.danger,
+                color: colors.white, fontSize: 9, fontWeight: 800,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>{totalUnread > 9 ? '9+' : totalUnread}</span>
+            )}
+          </div>
+          <IonLabel>{t.label}</IonLabel>
+        </IonTabButton>
+      ))}
+    </IonTabBar>
+  );
+};
+
+// نمط Ionic الصحيح: child routes كأخوة داخل IonRouterOutlet للتابات
+// /staff/sos/:id و /staff/chats/:id تُعرَض داخل الـ tabs (شريط التاب يبقى ظاهراً)
+const StaffTabs: FC = () => (
+  <IonTabs>
+    <IonRouterOutlet>
+      <Route exact path="/staff/dashboard"  component={StaffDashboardPage} />
+      <Route exact path="/staff/chats"      component={ChatListPage} />
+      <Route exact path="/staff/profile"    component={StaffProfilePage} />
+      {/* مسارات فرعيّة — تظهر داخل الـ tabs */}
+      <Route exact path="/staff/sos/:id"    component={StaffSOSDetailPage} />
+      <Route exact path="/staff/chats/:id"  component={StaffChatPage} />
+      <Route exact path="/staff"><Redirect to="/staff/dashboard" /></Route>
+    </IonRouterOutlet>
+    <StaffTabBar />
+  </IonTabs>
+);
+
+// ════════════════════════════════════════════════════
+// التوجيه الجذر
+// ════════════════════════════════════════════════════
+
+const homePathForRole = (role?: string): string =>
+  role === 'staff' ? '/staff/dashboard' : '/tabs/home';
+
+export const AppRoutes: FC = () => {
+  const { user, loading: authLoading } = useAuthContext();
+  const { profile, loading: profileLoading } = useProfileContext();
+  const { onboarded } = useOnboarding();
+
+  if (authLoading || (user && profileLoading)) {
+    return <SplashScreen />;
   }
+
+  const userHome = homePathForRole(profile?.role);
+  const entryPath = !onboarded
+    ? '/onboarding'
+    : user ? userHome : '/auth/login';
+
+  const studentGuard = (page: JSX.Element) => {
+    if (!user) return <Redirect to="/auth/login" />;
+    if (profile?.role === 'staff') return <Redirect to="/staff/dashboard" />;
+    return page;
+  };
+  const staffGuard = (page: JSX.Element) => {
+    if (!user) return <Redirect to="/auth/login" />;
+    if (profile?.role !== 'staff') return <Redirect to="/tabs/home" />;
+    return page;
+  };
 
   return (
     <IonReactRouter>
       <IonRouterOutlet>
-        <Switch>
-          {/* auth */}
-          <Route exact path="/auth/login" component={LoginPage} />
-          <Route exact path="/auth/otp"   component={OtpPage} />
+        {/* onboarding */}
+        <Route exact path="/onboarding">
+          {onboarded ? <Redirect to={user ? userHome : '/auth/login'} /> : <OnboardingPage />}
+        </Route>
 
-          {/* الألعاب — يحتاج المستخدم تسجيل الدخول */}
-          <Route exact path="/games/snake">
-            {user ? <SnakeGamePage /> : <Redirect to="/auth/login" />}
-          </Route>
-          <Route exact path="/games/memory">
-            {user ? <MemoryGamePage /> : <Redirect to="/auth/login" />}
-          </Route>
+        {/* auth */}
+        <Route exact path="/auth/login"    component={LoginPage} />
+        <Route exact path="/auth/register" component={RegisterPage} />
+        <Route exact path="/auth/otp"      component={OtpPage} />
 
-          {/* tabs الرئيسية */}
-          <Route path="/tabs">
-            {user ? <Tabs /> : <Redirect to="/auth/login" />}
-          </Route>
+        {/* أسماء بديلة شائعة — قبل routes الـ tabs لتفادي تداخل المسارات */}
+        <Route exact path="/sign-in"><Redirect to="/auth/login" /></Route>
+        <Route exact path="/signin"><Redirect to="/auth/login" /></Route>
+        <Route exact path="/login"><Redirect to="/auth/login" /></Route>
+        <Route exact path="/sign-up"><Redirect to="/auth/register" /></Route>
+        <Route exact path="/signup"><Redirect to="/auth/register" /></Route>
+        <Route exact path="/register"><Redirect to="/auth/register" /></Route>
+        <Route exact path="/auth"><Redirect to="/auth/login" /></Route>
 
-          {/* الافتراضي */}
-          <Route exact path="/">
-            <Redirect to={user ? '/tabs/home' : '/auth/login'} />
-          </Route>
-        </Switch>
+        {/* تابات المنسّق — يحوي داخله مسارات /staff/* كلّها (بما فيها التفاصيل) */}
+        <Route path="/staff">{staffGuard(<StaffTabs />)}</Route>
+
+        {/* محادثات الطالب */}
+        <Route exact path="/chats">{studentGuard(<StudentChatListPage />)}</Route>
+        <Route exact path="/chat/:id">{studentGuard(<StudentChatPage />)}</Route>
+
+        {/* ألعاب الطالب */}
+        <Route exact path="/games/snake">{studentGuard(<SnakeGamePage />)}</Route>
+        <Route exact path="/games/memory">{studentGuard(<MemoryGamePage />)}</Route>
+
+        {/* تابات الطالب */}
+        <Route path="/tabs">{studentGuard(<StudentTabs />)}</Route>
+
+        {/* الجذر */}
+        <Route exact path="/"><Redirect to={entryPath} /></Route>
       </IonRouterOutlet>
     </IonReactRouter>
   );

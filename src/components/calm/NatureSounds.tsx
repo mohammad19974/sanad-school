@@ -11,11 +11,11 @@ interface SoundOption {
 }
 
 const SOUNDS: SoundOption[] = [
-  { label: '🌊 أمواج', src: '/sounds/waves.mp3' },
-  { label: '🌧️ مطر',   src: '/sounds/rain.mp3' },
-  { label: '🍃 ريح',   src: '/sounds/wind.mp3' },
-  { label: '🔥 نار',   src: '/sounds/fire.mp3' },
-  { label: '🦅 طيور',  src: '/sounds/birds.mp3' },
+  { label: '🌊 أمواج', src: '/sounds/waves.wav' },
+  { label: '🌧️ مطر',   src: '/sounds/rain.wav' },
+  { label: '🍃 ريح',   src: '/sounds/wind.wav' },
+  { label: '🔥 نار',   src: '/sounds/fire.wav' },
+  { label: '🦅 طيور',  src: '/sounds/birds.wav' },
 ];
 
 export const NatureSounds: FC = () => {

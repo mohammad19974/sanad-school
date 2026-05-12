@@ -13,7 +13,7 @@ type Tab = 'breath' | 'messages' | 'sound' | 'games';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'breath',   label: 'تنفس' },
-  { id: 'messages', label: 'رسائل' },
+  { id: 'messages', label: 'كلمات تهدئة' },
   { id: 'sound',    label: 'أصوات' },
   { id: 'games',    label: '🎮 ألعاب' },
 ];

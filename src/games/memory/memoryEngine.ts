@@ -1,5 +1,8 @@
 // محرّك لعبة الذاكرة — منطق نقيّ
 // 16 بطاقة = 8 أزواج من رموز الأمان والطوارئ
+// طور المراحل: preview → playing → finished
+
+export type GameStatus = 'preview' | 'playing' | 'finished';
 
 export interface MemoryCard {
   id: number;
@@ -9,6 +12,7 @@ export interface MemoryCard {
 }
 
 export interface MemoryState {
+  status: GameStatus;
   cards: MemoryCard[];
   moves: number;
   matches: number;
@@ -18,7 +22,11 @@ export interface MemoryState {
   finished: boolean;
 }
 
+// مدّة عرض البطاقات في البداية بالميلي ثانية
+export const PREVIEW_MS = 3500;
+
 const SYMBOLS = ['🚑', '🛡️', '🚒', '⛑️', '🦮', '🏥', '💊', '🩺'];
+export const TOTAL_PAIRS = SYMBOLS.length;
 
 const shuffle = <T,>(arr: T[]): T[] => {
   const a = [...arr];
@@ -29,10 +37,16 @@ const shuffle = <T,>(arr: T[]): T[] => {
   return a;
 };
 
+/** ينشئ حالة جديدة — البطاقات مكشوفة لمدّة المعاينة */
 export const createMemoryState = (): MemoryState => {
   const pairs = shuffle([...SYMBOLS, ...SYMBOLS]);
   return {
-    cards: pairs.map((symbol, id) => ({ id, symbol, flipped: false, matched: false })),
+    status: 'preview',
+    cards: pairs.map((symbol, id) => ({
+      id, symbol,
+      flipped: true,    // كل البطاقات مكشوفة في البداية
+      matched: false,
+    })),
     moves: 0,
     matches: 0,
     firstPick: null,
@@ -40,16 +54,27 @@ export const createMemoryState = (): MemoryState => {
   };
 };
 
-/** يحاول قلب بطاقة — يُرجع الحالة الجديدة ودالة "complete" للتأخير قبل قلبها مرة أخرى */
+/** ينهي مرحلة المعاينة ويبدأ اللعب — يقلب كل البطاقات للخلف */
+export const startPlaying = (state: MemoryState): MemoryState => {
+  if (state.status !== 'preview') return state;
+  return {
+    ...state,
+    status: 'playing',
+    cards: state.cards.map((c) => ({ ...c, flipped: false })),
+  };
+};
+
+/** يحاول قلب بطاقة — يُرجع الحالة الجديدة ودالة لإنهاء المطابقة */
 export interface FlipResult {
   state: MemoryState;
-  /** بعد 700ms استدعِ هذه لتعديل البطاقات (مطابقة أو إعادتها لوجهها) */
+  /** بعد التأخير، استدعِ resolve لتطبيق نتيجة المطابقة */
   resolve?: (current: MemoryState) => MemoryState;
 }
 
 export const flipCard = (state: MemoryState, cardId: number): FlipResult => {
+  if (state.status !== 'playing' || state.finished) return { state };
   const card = state.cards[cardId];
-  if (card.flipped || card.matched || state.finished) return { state };
+  if (card.flipped || card.matched) return { state };
 
   // قلب البطاقة
   const flipped = state.cards.map((c) => c.id === cardId ? { ...c, flipped: true } : c);
@@ -81,7 +106,8 @@ export const flipCard = (state: MemoryState, cardId: number): FlipResult => {
         ...curr,
         cards: updated,
         matches,
-        finished: matches === SYMBOLS.length,
+        finished: matches === TOTAL_PAIRS,
+        status: matches === TOTAL_PAIRS ? 'finished' : curr.status,
       };
     } else {
       // إعادة قلب كلا البطاقتين

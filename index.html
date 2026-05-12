@@ -2,14 +2,69 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#4A7C59" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+
+    <!-- معلومات SEO + المشاركة الاجتماعية -->
     <title>سند — تطبيق الطوارئ المدرسية</title>
+    <meta name="description" content="تطبيق طوارئ للطلاب ذوي الإعاقة — اطلب النجدة بلمسة، تواصل مع منسّق طوارئ مدرستك، وابقَ هادئاً." />
+    <meta name="theme-color" content="#4A7C59" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="سند — تطبيق الطوارئ المدرسية" />
+    <meta property="og:description" content="نجدة فورية + محادثة + هدوء — للطلاب ذوي الإعاقة." />
+    <meta property="og:image" content="/icon-512.png" />
+    <meta property="og:locale" content="ar_SA" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="سند" />
+    <meta name="twitter:description" content="نجدة فورية للطلاب ذوي الإعاقة" />
+    <meta name="twitter:image" content="/icon-512.png" />
+
+    <!-- الأيقونات -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="سند" />
+
+    <!-- الخطوط -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin="" />
+
+    <!-- شاشة افتتاح أساسية أثناء تحميل JS (تختفي عند تحميل React) -->
+    <style>
+      :root { --bg: #4A7C59; --bgDark: #2E5138; }
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body { font-family: 'Tajawal', system-ui, sans-serif; background: #F5EED8; }
+      #root:empty::before {
+        content: "";
+        position: fixed; inset: 0;
+        background: linear-gradient(160deg, var(--bg) 0%, var(--bgDark) 100%);
+        z-index: 9999;
+      }
+      #root:empty::after {
+        content: "سند";
+        position: fixed; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 32px; font-weight: 800;
+        z-index: 10000;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

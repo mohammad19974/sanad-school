@@ -1,9 +1,16 @@
 // تهيئة Firebase — الملف الوحيد الذي يستدعي initializeApp
 // كل الخدمات الأخرى تستورد من هنا
+// مع تفعيل offline persistence لـ Firestore (IndexedDB) — يدعم العمل بدون إنترنت
 
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  connectFirestoreEmulator,
+  type Firestore,
+} from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
 import { getStorage, connectStorageEmulator, type FirebaseStorage } from 'firebase/storage';
 
@@ -19,7 +26,26 @@ const firebaseConfig = {
 const app: FirebaseApp = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
+
+// Firestore مع offline persistence (IndexedDB) — يعمل عبر tabs متعدّدة
+let firestoreDb: Firestore;
+try {
+  firestoreDb = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
+  });
+  // eslint-disable-next-line no-console
+  console.info('[sanad] Firestore offline persistence مُفعَّل');
+} catch (err) {
+  console.warn('[sanad] فشل تفعيل offline persistence — استخدام cache عادي:', err);
+  // fallback لو IndexedDB غير مدعوم (مثل Safari incognito)
+  // عند الفشل، الـ Firestore افتراضي يعمل بـ memory cache
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  firestoreDb = initializeFirestore(app, {});
+}
+export const db: Firestore = firestoreDb;
+
 export const functions: Functions = getFunctions(app, 'us-central1');
 export const storage: FirebaseStorage = getStorage(app);
 

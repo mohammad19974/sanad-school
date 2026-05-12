@@ -54,6 +54,23 @@ input { font-family: inherit; }
 
 .animate-in { animation: slide-up 0.35s ease forwards; }
 
+/* ─── إخفاء scrollbar للعناصر التي لا نريد scrollbar لها ─── */
+.sanad-quick-replies::-webkit-scrollbar { display: none; height: 0; }
+
+/* ─── Toast مخصّص ─── */
+.sanad-toast {
+  --border-radius: 14px;
+  --font-family: 'Tajawal', sans-serif;
+  --min-height: 50px;
+  --max-width: 90%;
+}
+.sanad-toast::part(message) {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
 /* ─── Leaflet داخل Ionic ─── */
 .leaflet-container {
   width: 100%;

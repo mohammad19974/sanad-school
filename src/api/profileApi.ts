@@ -1,7 +1,8 @@
 // إدارة ملف الطالب — قراءة/كتابة من Firestore
+// كل التحديثات تستخدم setDoc merge لتعمل سواء كان المستند موجوداً أم لا
 
 import {
-  doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp,
+  doc, getDoc, setDoc, onSnapshot, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { emptyProfile, type StudentProfile } from '../types';
@@ -24,13 +25,17 @@ export const getOrCreateProfile = async (uid: string): Promise<StudentProfile> =
   return fresh;
 };
 
-/** يحدّث حقولاً جزئياً من الملف */
+/** يحدّث حقولاً جزئياً من الملف — يُنشئ المستند إن لم يكن موجوداً (merge) */
 export const updateProfile = async (
   uid: string,
   patch: Partial<StudentProfile>,
 ): Promise<void> => {
   const ref = doc(db, studentsCol, uid);
-  await updateDoc(ref, { ...patch, updatedAt: serverTimestamp() });
+  await setDoc(
+    ref,
+    { ...patch, uid, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
 };
 
 /** يشترك في تغيّرات الملف لحظياً */

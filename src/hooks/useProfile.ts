@@ -15,20 +15,37 @@ export const useProfile = (uid: string | undefined): UseProfileResult => {
   const [loading, setLoading] = useState(true);
 
   // تأكد من وجود مستند الطالب أولاً، ثم اشترك في التغييرات
+  // مهم: عند تغيّر uid (مثلاً بعد login) يجب إعادة loading=true لمنع
+  // الـ guards من إرجاع مسار خاطئ قبل وصول البيانات
   useEffect(() => {
-    if (!uid) { setLoading(false); return; }
+    if (!uid) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+    setProfile(null);
+    setLoading(true);
+
     let unsub: (() => void) | null = null;
+    let cancelled = false;
 
     getOrCreateProfile(uid)
       .then(() => {
-        unsub = watchProfile(uid, (p) => { setProfile(p); setLoading(false); });
+        if (cancelled) return;
+        unsub = watchProfile(uid, (p) => {
+          setProfile(p);
+          setLoading(false);
+        });
       })
       .catch((err) => {
         console.error('[useProfile] فشل جلب الملف:', err);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       });
 
-    return () => { if (unsub) unsub(); };
+    return () => {
+      cancelled = true;
+      if (unsub) unsub();
+    };
   }, [uid]);
 
   const save = useCallback(async (patch: Partial<StudentProfile>) => {

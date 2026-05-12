@@ -6,12 +6,15 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
 import { AppRoutes } from './routes/AppRoutes';
+import { OfflineBanner } from './components/OfflineBanner';
 
 // إعداد Ionic React
 setupIonicReact({ mode: 'ios' });
 
 const App: FC = () => (
   <IonApp>
+    {/* شريط offline يظهر تلقائياً عند فقد الاتصال */}
+    <OfflineBanner />
     <AuthProvider>
       <ProfileProvider>
         <AppRoutes />

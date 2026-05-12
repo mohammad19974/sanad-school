@@ -8,6 +8,8 @@ import { Toggle } from '../ui/Toggle';
 import { Icon } from '../ui/Icon';
 import { useProfileContext } from '../context/ProfileContext';
 import { signOut } from '../api/authApi';
+import { useToast } from '../hooks/useToast';
+import { useOnboarding } from '../hooks/useOnboarding';
 import { useHistory } from 'react-router-dom';
 import { colors, fontFamily } from '../theme/tokens';
 import {
@@ -22,14 +24,41 @@ const BLOODS: readonly BloodType[] = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+',
 export const ProfilePage: FC = () => {
   const { profile, save } = useProfileContext();
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving]   = useState(false);
   const [draft, setDraft] = useState<StudentProfile>(profile ?? emptyProfile(''));
   const history = useHistory();
+  const toast = useToast();
+  const { reset: resetOnboarding } = useOnboarding();
 
   useEffect(() => { if (profile) setDraft(profile); }, [profile]);
 
+  const replayOnboarding = () => {
+    resetOnboarding();
+    history.push('/onboarding');
+  };
+
   const persist = async () => {
-    await save(draft);
-    setEditing(false);
+    setSaving(true);
+    try {
+      await save(draft);
+      setEditing(false);
+      toast.success('تم حفظ التعديلات');
+    } catch (err) {
+      console.error(err);
+      toast.error('فشل الحفظ. حاول مرّة أخرى');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.info('تم تسجيل الخروج');
+      history.replace('/auth/login');
+    } catch {
+      toast.error('فشل تسجيل الخروج');
+    }
   };
 
   const setField = <K extends keyof StudentProfile>(key: K, value: StudentProfile[K]) => {
@@ -75,11 +104,13 @@ export const ProfilePage: FC = () => {
               </div>
               <button
                 onClick={() => editing ? persist() : setEditing(true)}
+                disabled={saving}
                 style={{
                   padding: '8px 14px', borderRadius: 12,
                   background: editing ? colors.primary : `${colors.primary}18`,
-                  border: 'none', cursor: 'pointer',
+                  border: 'none', cursor: saving ? 'default' : 'pointer',
                   display: 'flex', alignItems: 'center', gap: 5,
+                  opacity: saving ? 0.6 : 1,
                 }}
               >
                 <Icon name={editing ? 'save' : 'edit'} size={15} color={editing ? colors.white : colors.primary} />
@@ -87,7 +118,7 @@ export const ProfilePage: FC = () => {
                   fontSize: 12, fontWeight: 700, fontFamily,
                   color: editing ? colors.white : colors.primary,
                 }}>
-                  {editing ? 'حفظ' : 'تعديل'}
+                  {saving ? 'جاري...' : editing ? 'حفظ' : 'تعديل'}
                 </span>
               </button>
             </div>
@@ -169,12 +200,25 @@ export const ProfilePage: FC = () => {
             </div>
 
             <button
-              onClick={async () => { await signOut(); history.replace('/auth/login'); }}
+              onClick={replayOnboarding}
+              style={{
+                background: 'transparent', border: `1.5px solid ${colors.bgDark}`,
+                color: colors.primary, padding: '10px', borderRadius: 14,
+                fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                marginTop: 10,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}>
+              <span>👋</span>
+              <span>إعادة عرض شاشة الترحيب</span>
+            </button>
+
+            <button
+              onClick={handleSignOut}
               style={{
                 background: 'transparent', border: `1.5px solid ${colors.danger}`,
                 color: colors.danger, padding: '10px', borderRadius: 14,
                 fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                marginTop: 10, marginBottom: 20,
+                marginTop: 8, marginBottom: 20,
               }}>
               تسجيل الخروج
             </button>
