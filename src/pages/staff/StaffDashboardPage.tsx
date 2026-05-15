@@ -9,6 +9,7 @@ import { useStaffSosList } from '../../hooks/useStaffSosList';
 import { useEmergencyBuzzer } from '../../hooks/useEmergencyBuzzer';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
 import { NotificationPermissionBanner } from '../../components/staff/NotificationPermissionBanner';
+import { QrScannerModal } from '../../components/staff/QrScannerModal';
 import { useAuthContext } from '../../context/AuthContext';
 import { useProfileContext } from '../../context/ProfileContext';
 import { signOut } from '../../api/authApi';
@@ -26,6 +27,7 @@ export const StaffDashboardPage: FC = () => {
   const webNotif = useWebNotifications();
   const toast = useToast();
   const [tab, setTab] = useState<Tab>('active');
+  const [scannerOpen, setScannerOpen] = useState(false);
   const lastActiveIdsRef = useRef<Set<string>>(new Set());
 
   // ─── تشغيل الإنذار + إشعار نظام التشغيل عند وصول طلب جديد ─────────
@@ -130,6 +132,22 @@ export const StaffDashboardPage: FC = () => {
           {/* شريط طلب إذن الإشعارات (يختفي بعد التفعيل) */}
           <NotificationPermissionBanner />
 
+          {/* زر مسح QR بطاقة طوارئ طالب */}
+          <button
+            onClick={() => setScannerOpen(true)}
+            style={{
+              margin: '6px 12px', padding: '11px 14px', borderRadius: 14,
+              background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: `0 4px 14px ${colors.pulse}`,
+              fontFamily, color: colors.white, fontSize: 14, fontWeight: 700,
+            }}
+          >
+            <span style={{ fontSize: 18 }}>📷</span>
+            <span>مسح بطاقة طوارئ طالب (QR)</span>
+          </button>
+
           {/* تابات */}
           <div style={{
             display: 'flex', padding: '10px 12px 4px', gap: 6,
@@ -176,6 +194,9 @@ export const StaffDashboardPage: FC = () => {
             </div>
           )}
         </div>
+
+        {/* مودال ماسح QR — يفتح الكاميرا ويعرض البطاقة */}
+        <QrScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
       </IonContent>
     </IonPage>
   );

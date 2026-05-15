@@ -12,7 +12,7 @@ import {
 } from '../../api/authApi';
 import { useToast } from '../../hooks/useToast';
 import { toE164 } from '../../helpers/formatters';
-import { isValidSaudiPhone } from '../../helpers/validators';
+import { isValidIsraeliPhone } from '../../helpers/validators';
 import { colors, fontFamily } from '../../theme/tokens';
 import type { FirebaseError } from 'firebase/app';
 
@@ -53,15 +53,15 @@ export const LoginPage: FC = () => {
 
   const submitPhone = async () => {
     setError(null);
-    if (!isValidSaudiPhone(phone)) {
-      const msg = 'رقم الهاتف غير صحيح. مثال: 0512345678';
+    if (!isValidIsraeliPhone(phone)) {
+      const msg = 'رقم الهاتف غير صحيح. مثال: 0501234567';
       setError(msg);
       toast.warning(msg);
       return;
     }
     setLoading(true);
     try {
-      const e164 = toE164(phone, 'SA');
+      const e164 = toE164(phone, 'IL');
       window.__sanadConfirmation = await requestOtp(e164);
       toast.info('تم إرسال رمز التحقّق');
       history.push('/auth/otp');
@@ -124,7 +124,7 @@ export const LoginPage: FC = () => {
               <Field
                 label="رقم الجوال" type="tel"
                 value={phone} onChange={setPhone}
-                placeholder="05XXXXXXXX"
+                placeholder="050 123 4567"
               />
               <div id="recaptcha-container" />
               <div style={{ fontSize: 11, color: colors.warning, padding: '4px 8px' }}>

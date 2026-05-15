@@ -5,7 +5,7 @@
 //   • Firebase/Google APIs: pass-through (Firestore عنده offline خاصّ به)
 //   • POST/PUT: لا تُكاش (دائماً online)
 
-const VERSION = 'sanad-v2';
+const VERSION = 'sanad-v4-categories';
 const CACHE_NAME = `sanad-cache-${VERSION}`;
 
 // الأصول الأساسيّة التي تُحمَّل عند install

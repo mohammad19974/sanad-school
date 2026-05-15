@@ -14,9 +14,16 @@ interface Props {
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  /** وضع offline — يستخدم SMS بدلاً من Cloud */
+  offline?: boolean;
+  /** اسم المستلِم في وضع SMS (مثل "ولي الأمر") */
+  smsRecipient?: string;
 }
 
-export const SOSConfirmModal: FC<Props> = ({ isOpen, onCancel, onConfirm }) => {
+export const SOSConfirmModal: FC<Props> = ({
+  isOpen, onCancel, onConfirm,
+  offline = false, smsRecipient,
+}) => {
   const [remaining, setRemaining] = useState(COUNTDOWN_SEC);
   const tickRef     = useRef<number | null>(null);
   const haptics     = useHaptics();
@@ -107,15 +114,23 @@ export const SOSConfirmModal: FC<Props> = ({ isOpen, onCancel, onConfirm }) => {
           fontSize: 22, fontWeight: 800, color: colors.white,
           textAlign: 'center',
         }}>
-          {remaining > 0 ? 'سيتم إرسال طلب النجدة' : 'جاري الإرسال...'}
+          {remaining > 0
+            ? offline ? 'إرسال رسالة طوارئ SMS' : 'سيتم إرسال طلب النجدة'
+            : offline ? 'جاري فتح الرسائل...' : 'جاري الإرسال...'}
         </div>
         <div style={{
           fontSize: 14, color: 'rgba(255,255,255,0.85)', textAlign: 'center',
-          maxWidth: 280, lineHeight: 1.6,
+          maxWidth: 300, lineHeight: 1.6,
         }}>
-          {remaining > 0
-            ? 'سيتم إعلام ولي الأمر والمنسّق المدرسي مع موقعك الحالي'
-            : 'الرجاء الانتظار'}
+          {offline ? (
+            remaining > 0
+              ? `📡 لا يوجد إنترنت — سنرسل SMS عبر شريحة الاتصال إلى ${smsRecipient || 'جهة الطوارئ'}`
+              : 'سيُفتح تطبيق الرسائل لتأكيد الإرسال'
+          ) : (
+            remaining > 0
+              ? 'سيتم إعلام ولي الأمر والمنسّق المدرسي مع موقعك الحالي'
+              : 'الرجاء الانتظار'
+          )}
         </div>
 
         {/* العدّاد الكبير مع حلقة تقدّم */}
@@ -160,7 +175,7 @@ export const SOSConfirmModal: FC<Props> = ({ isOpen, onCancel, onConfirm }) => {
             width: '100%', maxWidth: 320,
           }}>
             <PillButton onClick={sendNow} variant="white">
-              إرسال الآن
+              {offline ? '📨 فتح الرسائل الآن' : 'إرسال الآن'}
             </PillButton>
             <button
               onClick={cancel}

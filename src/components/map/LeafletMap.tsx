@@ -4,7 +4,17 @@
 import { useEffect, useRef, type FC } from 'react';
 import L, { type Map as LeafletMapType, type Marker } from 'leaflet';
 import { colors } from '../../theme/tokens';
-import type { Shelter } from '../../types';
+import { shelterTypeColor, type Shelter } from '../../types';
+
+// رمز مختصر يُرسم داخل الـ marker لكل نوع
+const TYPE_GLYPH: Record<Shelter['type'], string> = {
+  school:      '🏫',
+  medical:     '🏥',
+  mosque:      '🕌',
+  shelter:     '🛡️',
+  police:      '🚓',
+  firestation: '🚒',
+};
 
 interface Props {
   userLat: number;
@@ -14,26 +24,28 @@ interface Props {
   onSelect?: (id: string) => void;
 }
 
-// أيقونة مخصّصة على شكل قطرة لكل ملجأ
-const buildShelterIcon = (selected: boolean): L.DivIcon => {
-  const bg = selected ? colors.primaryDark : colors.primary;
+// أيقونة مخصّصة على شكل قطرة — لون + emoji حسب نوع الملجأ
+const buildShelterIcon = (type: Shelter['type'], selected: boolean): L.DivIcon => {
+  const bg = shelterTypeColor[type];
+  const glyph = TYPE_GLYPH[type];
+  const size = selected ? 40 : 32;
   return L.divIcon({
     className: '',
     html: `
       <div style="
-        width:${selected ? 38 : 30}px;
-        height:${selected ? 38 : 30}px;
+        width:${size}px;
+        height:${size}px;
         background:${bg};
         border:3px solid #fff;
         border-radius:50% 50% 50% 0;
         transform:rotate(-45deg);
-        box-shadow:0 4px 10px rgba(0,0,0,0.3);
+        box-shadow:0 4px 10px rgba(0,0,0,0.35);
         display:flex;align-items:center;justify-content:center;
       ">
-        <div style="transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px;">●</div>
+        <div style="transform:rotate(45deg);font-size:${selected ? 17 : 14}px;line-height:1;">${glyph}</div>
       </div>`,
-    iconSize: [selected ? 38 : 30, selected ? 38 : 30],
-    iconAnchor: [selected ? 19 : 15, selected ? 38 : 30],
+    iconSize:   [size, size],
+    iconAnchor: [size / 2, size],
   });
 };
 
@@ -100,7 +112,7 @@ export const LeafletMap: FC<Props> = ({ userLat, userLng, shelters, selectedId, 
 
     shelters.forEach((s) => {
       const marker = L.marker([s.lat, s.lng], {
-        icon: buildShelterIcon(s.id === selectedId),
+        icon: buildShelterIcon(s.type, s.id === selectedId),
       })
         .addTo(map)
         .on('click', () => onSelect?.(s.id));

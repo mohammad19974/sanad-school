@@ -4,3 +4,4 @@ export * from './shelter';
 export * from './sos';
 export * from './notification';
 export * from './message';
+export * from './smsLog';

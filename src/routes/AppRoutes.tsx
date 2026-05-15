@@ -29,6 +29,9 @@ import { ContactPage } from '../pages/ContactPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { StudentChatPage } from '../pages/StudentChatPage';
 import { StudentChatListPage } from '../pages/StudentChatListPage';
+import { SmsLogPage } from '../pages/SmsLogPage';
+import { MedicalCardPage } from '../pages/MedicalCardPage';
+import { PublicMedicalCardPage } from '../pages/PublicMedicalCardPage';
 import { SnakeGamePage } from '../pages/games/SnakeGamePage';
 import { MemoryGamePage } from '../pages/games/MemoryGamePage';
 import { StaffDashboardPage } from '../pages/staff/StaffDashboardPage';
@@ -233,6 +236,15 @@ export const AppRoutes: FC = () => {
         {/* محادثات الطالب */}
         <Route exact path="/chats">{studentGuard(<StudentChatListPage />)}</Route>
         <Route exact path="/chat/:id">{studentGuard(<StudentChatPage />)}</Route>
+
+        {/* سجل رسائل SMS — للطالب */}
+        <Route exact path="/sms-log">{studentGuard(<SmsLogPage />)}</Route>
+
+        {/* بطاقة الطوارئ الطبية — للطالب (تتطلّب تسجيل دخول) */}
+        <Route exact path="/medical-card-mine">{studentGuard(<MedicalCardPage />)}</Route>
+
+        {/* بطاقة الطوارئ الطبية — عرض عامّ من QR (لا يحتاج تسجيل) */}
+        <Route exact path="/medical-card" component={PublicMedicalCardPage} />
 
         {/* ألعاب الطالب */}
         <Route exact path="/games/snake">{studentGuard(<SnakeGamePage />)}</Route>

@@ -17,8 +17,8 @@ interface UseGeolocationResult {
   refresh: () => Promise<void>;
 }
 
-/** يحاول جلب الموقع — يقع على fallback للرياض إذا فشل */
-const FALLBACK_RIYADH: Coords = { lat: 24.7136, lng: 46.6753 };
+/** Fallback إذا رفض المتصفّح/فشل GPS — موقع القدس */
+const FALLBACK_JERUSALEM: Coords = { lat: 31.7683, lng: 35.2137 };
 
 export const useGeolocation = (autoFetch = true): UseGeolocationResult => {
   const [coords, setCoords] = useState<Coords | null>(null);
@@ -43,9 +43,9 @@ export const useGeolocation = (autoFetch = true): UseGeolocationResult => {
         accuracy: pos.coords.accuracy,
       });
     } catch (err) {
-      console.warn('[useGeolocation] تعذّر جلب الموقع، fallback للرياض:', err);
+      console.warn('[useGeolocation] تعذّر جلب الموقع، fallback للقدس:', err);
       setError('تعذّر الوصول لخدمة الموقع');
-      setCoords(FALLBACK_RIYADH);
+      setCoords(FALLBACK_JERUSALEM);
     } finally {
       setLoading(false);
     }

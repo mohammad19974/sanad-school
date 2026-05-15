@@ -46,7 +46,7 @@ const ensureRecaptcha = (containerId = 'recaptcha-container'): RecaptchaVerifier
   return recaptchaVerifier;
 };
 
-/** يرسل OTP إلى رقم بصيغة E.164، مثل +966512345678 */
+/** يرسل OTP إلى رقم بصيغة E.164، مثل +972501234567 */
 export const requestOtp = async (phoneE164: string): Promise<ConfirmationResult> => {
   const verifier = ensureRecaptcha();
   return await signInWithPhoneNumber(auth, phoneE164, verifier);

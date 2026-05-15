@@ -137,7 +137,7 @@ export const ProfilePage: FC = () => {
                 placeholder="أدخل رقم الهوية" editing={editing}
                 onChange={(v) => setField('id', v)} />
               <ProfileField label="رقم الجوال" icon="phone" value={draft.phone}
-                placeholder="+966" type="tel" editing={editing}
+                placeholder="+972 50 123 4567" type="tel" editing={editing}
                 onChange={(v) => setField('phone', v)} />
               <ChipSelector label="الصف الدراسي" options={GRADES} value={draft.grade}
                 editing={editing} onChange={(v) => setField('grade', v)} />
@@ -160,14 +160,14 @@ export const ProfilePage: FC = () => {
                 placeholder="اسم ولي الأمر" editing={editing}
                 onChange={(v) => setGuardian({ name: v })} />
               <ProfileField label="رقم ولي الأمر" icon="phone" value={draft.guardian.phone}
-                placeholder="+966" type="tel" editing={editing}
+                placeholder="+972 50 123 4567" type="tel" editing={editing}
                 onChange={(v) => setGuardian({ phone: v })} />
             </Section>
 
             <SectionTitle>إمكانية الوصول</SectionTitle>
             <Section>
               <SettingRow
-                label="الإدخال الصوتي" icon="mic"
+                label='🎤 التفعيل الصوتي — قُل "نجدة" لطلب المساعدة' icon="mic"
                 value={draft.settings.voiceInput}
                 onChange={(v) => setSetting('voiceInput', v)} />
               <SettingRow
@@ -181,23 +181,45 @@ export const ProfilePage: FC = () => {
                 last />
             </Section>
 
-            {/* بطاقة طوارئ */}
-            <div style={{
-              borderRadius: 18, padding: '14px 16px',
-              background: colors.primary, boxShadow: `0 4px 16px ${colors.pulse}`,
-              display: 'flex', alignItems: 'center', gap: 12,
-              marginTop: 8,
-            }}>
-              <Icon name="shield" size={26} color={colors.white} />
+            {/* بطاقة الطوارئ مع QR */}
+            <button
+              onClick={() => history.push('/medical-card-mine')}
+              style={{
+                borderRadius: 18, padding: '14px 16px',
+                background: colors.primary, boxShadow: `0 4px 16px ${colors.pulse}`,
+                display: 'flex', alignItems: 'center', gap: 12,
+                marginTop: 8, border: 'none', cursor: 'pointer',
+                width: '100%', textAlign: 'right', fontFamily,
+              }}>
+              <div style={{
+                width: 46, height: 46, borderRadius: 12,
+                background: 'rgba(255,255,255,0.25)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22,
+              }}>📱</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: colors.white }}>
-                  بطاقة الطوارئ الطبية
+                <div style={{ fontSize: 14, fontWeight: 800, color: colors.white }}>
+                  بطاقة الطوارئ الذكيّة (QR)
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>
-                  تُعرض تلقائياً في حالة الطوارئ
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>
+                  اضغط — يمسحها الممرّض ليرى بياناتك الحيويّة فوراً
                 </div>
               </div>
-            </div>
+              <span style={{ color: colors.white, fontSize: 18, opacity: 0.7 }}>‹</span>
+            </button>
+
+            <button
+              onClick={() => history.push('/sms-log')}
+              style={{
+                background: 'transparent', border: `1.5px solid ${colors.bgDark}`,
+                color: colors.text, padding: '10px', borderRadius: 14,
+                fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                marginTop: 10,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}>
+              <span>📨</span>
+              <span>سجل رسائل SMS الطوارئ</span>
+            </button>
 
             <button
               onClick={replayOnboarding}
@@ -205,7 +227,7 @@ export const ProfilePage: FC = () => {
                 background: 'transparent', border: `1.5px solid ${colors.bgDark}`,
                 color: colors.primary, padding: '10px', borderRadius: 14,
                 fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                marginTop: 10,
+                marginTop: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               }}>
               <span>👋</span>

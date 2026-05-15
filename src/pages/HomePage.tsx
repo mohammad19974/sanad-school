@@ -9,13 +9,18 @@ import { StatusBanner } from '../components/home/StatusBanner';
 import { QuickActions } from '../components/home/QuickActions';
 import { NotificationsPanel } from '../components/home/NotificationsPanel';
 import { ActiveSOSBanner } from '../components/home/ActiveSOSBanner';
+import { VoiceTriggerIndicator } from '../components/home/VoiceTriggerIndicator';
 import { Icon } from '../ui/Icon';
 import { useAuthContext } from '../context/AuthContext';
 import { useProfileContext } from '../context/ProfileContext';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useNotifications } from '../hooks/useNotifications';
 import { useStudentChatThreads } from '../hooks/useStudentChatThreads';
+import { useOnline } from '../hooks/useOnline';
+import { useSmsLog } from '../hooks/useSmsLog';
 import { useToast } from '../hooks/useToast';
+import { useVoiceTrigger } from '../hooks/useVoiceTrigger';
+import { buildSosSmsBody, openSmsCompose, pickSmsRecipients } from '../helpers/smsHelper';
 import { sendSOS, watchStudentSOSRequests } from '../api/sosApi';
 import { colors, fontFamily } from '../theme/tokens';
 import { buildSnapshot, type SOSRequest } from '../types';
@@ -30,8 +35,19 @@ export const HomePage: FC = () => {
   const { coords } = useGeolocation();
   const notif = useNotifications();
   const chats = useStudentChatThreads();
+  const online = useOnline();
+  const smsLog = useSmsLog();
   const toast = useToast();
   const history = useHistory();
+
+  // ─── التفعيل الصوتي ─────────────────────────
+  // مُفعَّل فقط لو profile.settings.voiceInput = true
+  const voiceEnabled = !!profile?.settings?.voiceInput;
+  const voice = useVoiceTrigger(voiceEnabled, () => {
+    // قائلاً "نجدة" → افتح مودال التأكيد (نفس مسلك زر SOS)
+    toast.info('🎤 تم اكتشاف نداء نجدة', { duration: 2500 });
+    setConfirmOpen(true);
+  });
   const studentName = profile?.name || 'صديقي';
 
   // اشترك في طلبات SOS للطالب → اعرض النشط منها كـ banner
@@ -49,6 +65,10 @@ export const HomePage: FC = () => {
   /** ضغط الزر يفتح المودال للتأكيد قبل الإرسال */
   const openSOSConfirm = () => { setConfirmOpen(true); };
 
+  // مستلِم SMS في وضع offline (أوّل جهة متاحة)
+  const smsRecipients = profile ? pickSmsRecipients(profile) : [];
+  const primarySmsRecipient = smsRecipients[0] ?? null;
+
   /** يُستدعى من المودال عند انتهاء العدّ التنازلي أو الضغط على "إرسال الآن" */
   const actuallySendSOS = async () => {
     setConfirmOpen(false);
@@ -56,15 +76,56 @@ export const HomePage: FC = () => {
       toast.error('لم يُحمَّل ملفّك بعد. حاول لاحقاً');
       return;
     }
+    const location = coords ?? { lat: 0, lng: 0 };
+
+    // وضع offline → إرسال عبر SMS (شريحة الاتصال)
+    if (!online) {
+      if (!primarySmsRecipient) {
+        toast.error('لا يوجد إنترنت ولم تُضف ولي الأمر. أضف رقمه من "حسابي"');
+        return;
+      }
+      const body = buildSosSmsBody(profile, coords);
+      // فتح تطبيق الرسائل بشريحة الاتصال
+      openSmsCompose(primarySmsRecipient.phone, body);
+      // تسجيل المحاولة محلياً
+      smsLog.add({
+        recipientName: primarySmsRecipient.name,
+        recipientPhone: primarySmsRecipient.phone,
+        body,
+        reason: 'offline',
+        location: coords ? { lat: coords.lat, lng: coords.lng } : undefined,
+      });
+      // أيضاً نحاول كتابة Firestore — سيُحفظ محلياً ويُرسل عند عودة الاتصال
+      sendSOS({ snapshot: buildSnapshot(profile), location })
+        .catch((err) => console.warn('[sos] sentinel write queued offline:', err));
+      setSosSent(true);
+      toast.warning(`📨 تم فتح الرسائل لإرسال SMS إلى ${primarySmsRecipient.name}`, { duration: 5000 });
+      window.setTimeout(() => setSosSent(false), 5000);
+      return;
+    }
+
+    // وضع online — المسار الطبيعي
     try {
-      const location = coords ?? { lat: 0, lng: 0 };
       await sendSOS({ snapshot: buildSnapshot(profile), location });
       setSosSent(true);
       toast.success('تم إرسال طلب النجدة • المساعدة قادمة', { duration: 4000 });
       window.setTimeout(() => setSosSent(false), 5000);
     } catch (err) {
       console.error('[sanad] فشل إرسال SOS:', err);
-      toast.error('فشل إرسال الطلب. تحقّق من اتصالك');
+      // fallback لـ SMS لو كان لدينا مستلم
+      if (primarySmsRecipient) {
+        const body = buildSosSmsBody(profile, coords);
+        openSmsCompose(primarySmsRecipient.phone, body);
+        smsLog.add({
+          recipientName: primarySmsRecipient.name,
+          recipientPhone: primarySmsRecipient.phone,
+          body, reason: 'offline',
+          location: coords ? { lat: coords.lat, lng: coords.lng } : undefined,
+        });
+        toast.warning('فشل الاتصال — استُخدم SMS احتياطاً', { duration: 5000 });
+      } else {
+        toast.error('فشل إرسال الطلب. تحقّق من اتصالك');
+      }
     }
   };
 
@@ -154,6 +215,9 @@ export const HomePage: FC = () => {
             <StatusBanner sosSent={sosSent} />
           )}
 
+          {/* مؤشّر التفعيل الصوتي — يظهر فقط لو مُفعَّل في إعدادات الطالب */}
+          {voiceEnabled && <VoiceTriggerIndicator status={voice.status} />}
+
           {/* الزر الكبير + الإجراءات السريعة */}
           <div style={{
             flex: 1, display: 'flex', flexDirection: 'column',
@@ -182,11 +246,13 @@ export const HomePage: FC = () => {
           onClearAll={notif.clearAll}
         />
 
-        {/* مودال تأكيد SOS */}
+        {/* مودال تأكيد SOS — يظهر بوضع offline تلقائياً عند عدم الاتصال */}
         <SOSConfirmModal
           isOpen={confirmOpen}
           onCancel={cancelSOS}
           onConfirm={actuallySendSOS}
+          offline={!online}
+          smsRecipient={primarySmsRecipient?.name}
         />
       </IonContent>
     </IonPage>

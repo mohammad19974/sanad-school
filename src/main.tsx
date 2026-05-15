@@ -24,10 +24,17 @@ import App from './App';
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then((reg) => console.info('[Sanad] SW مُسجَّل', reg.scope))
+      .then((reg) => {
+        console.info('[Sanad] SW مُسجَّل', reg.scope);
+        // افحص للترقية باستمرار
+        void reg.update();
+      })
       .catch((err) => console.warn('[Sanad] فشل تسجيل SW:', err));
   });
 }
+
+// مسح cache OSM القديم (لإجبار جلب أحدث)
+try { localStorage.removeItem('sanad.osm.shelters.v1'); } catch { /* noop */ }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
