@@ -22,7 +22,7 @@ const shelters: Seed[] = [
   { name: 'مدرسة الأمل',            type: 'school',  lat: BASE.lat + 0.002,  lng: BASE.lng + 0.001,  capacity: 250 },
   { name: 'مركز الهلال الأحمر',     type: 'medical', lat: BASE.lat - 0.001,  lng: BASE.lng + 0.003,  capacity: 80  },
   { name: 'مسجد النور',              type: 'mosque',  lat: BASE.lat + 0.0015, lng: BASE.lng - 0.002,  capacity: 200 },
-  { name: 'مدرسة الفيصلية الثانوية', type: 'school',  lat: BASE.lat + 0.004,  lng: BASE.lng + 0.005,  capacity: 400 },
+  { name: 'القمة الثانوية',           type: 'school',  lat: BASE.lat + 0.004,  lng: BASE.lng + 0.005,  capacity: 400 },
   { name: 'مستشفى الملك فهد',        type: 'medical', lat: BASE.lat - 0.003,  lng: BASE.lng - 0.002,  capacity: 1000 },
 ];
 

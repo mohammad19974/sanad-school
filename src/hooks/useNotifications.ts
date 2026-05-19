@@ -26,7 +26,7 @@ const SAMPLE: AppNotification[] = [
     id: 'n3',
     kind: 'shelter',
     title: 'ملجأ جديد قريب منك',
-    body: 'تم إضافة "مدرسة الفيصلية" إلى قائمة الملاجئ.',
+    body: 'تم إضافة "القمة الثانوية" إلى قائمة الملاجئ.',
     createdAt: Date.now() - 1000 * 60 * 60 * 5,
     read: true,
   },

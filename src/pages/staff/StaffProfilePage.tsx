@@ -118,7 +118,7 @@ export const StaffProfilePage: FC = () => {
                 value={staffTitle}
                 editing={editing}
                 onChange={setStaffTitle}
-                placeholder="مثل: منسّق طوارئ — ثانوية الفيصل"
+                placeholder="مثل: منسّق طوارئ — القمة الثانوية"
                 last
               />
             </Section>

@@ -41,7 +41,7 @@ export interface StudentProfile {
   settings: AccessibilitySettings;
   fcmTokens?: string[];
   /** خاص بالمنسّق */
-  staffTitle?: string;       // مثل: "منسّق طوارئ — ثانوية الفيصل"
+  staffTitle?: string;       // مثل: "منسّق طوارئ — القمة الثانوية"
   createdAt?: number;
   updatedAt?: number;
 }
