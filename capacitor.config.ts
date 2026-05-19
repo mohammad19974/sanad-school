@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.sanad.app',
-  appName: 'سند',
+  appName: 'نبض',
   webDir: 'dist',
   bundledWebRuntime: false,
   android: {

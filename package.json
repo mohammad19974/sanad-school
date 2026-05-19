@@ -1,7 +1,7 @@
 {
-  "name": "sanad",
+  "name": "nabd",
   "version": "1.0.0",
-  "description": "تطبيق سند — الطوارئ المدرسية للطلاب ذوي الإعاقة",
+  "description": "تطبيق نبض — الطوارئ المدرسية للطلاب ذوي الإعاقة",
   "private": true,
   "type": "module",
   "scripts": {

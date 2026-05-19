@@ -9,6 +9,7 @@ import { StatusBanner } from '../components/home/StatusBanner';
 import { QuickActions } from '../components/home/QuickActions';
 import { NotificationsPanel } from '../components/home/NotificationsPanel';
 import { ActiveSOSBanner } from '../components/home/ActiveSOSBanner';
+import { ActiveSOSOptionsSheet } from '../components/home/ActiveSOSOptionsSheet';
 import { VoiceTriggerIndicator } from '../components/home/VoiceTriggerIndicator';
 import { Icon } from '../ui/Icon';
 import { useAuthContext } from '../context/AuthContext';
@@ -21,7 +22,7 @@ import { useSmsLog } from '../hooks/useSmsLog';
 import { useToast } from '../hooks/useToast';
 import { useVoiceTrigger } from '../hooks/useVoiceTrigger';
 import { buildSosSmsBody, openSmsCompose, pickSmsRecipients } from '../helpers/smsHelper';
-import { sendSOS, watchStudentSOSRequests } from '../api/sosApi';
+import { sendSOS, watchStudentSOSRequests, cancelMySOS } from '../api/sosApi';
 import { colors, fontFamily } from '../theme/tokens';
 import { buildSnapshot, type SOSRequest } from '../types';
 
@@ -29,6 +30,7 @@ export const HomePage: FC = () => {
   const [sosSent, setSosSent] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [activeSOS, setActiveSOS] = useState<SOSRequest | null>(null);
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
@@ -62,8 +64,40 @@ export const HomePage: FC = () => {
     return () => unsub();
   }, [user]);
 
-  /** ضغط الزر يفتح المودال للتأكيد قبل الإرسال */
-  const openSOSConfirm = () => { setConfirmOpen(true); };
+  /** ضغط الزر يفتح:
+   *   - شيت خيارات إن كان هناك طلب نشط (محادثة / تهدئة / إلغاء)
+   *   - مودال تأكيد لإرسال طلب جديد (في كل الحالات الأخرى)
+   */
+  const openSOSConfirm = () => {
+    if (activeSOS) {
+      setOptionsOpen(true);
+    } else {
+      setConfirmOpen(true);
+    }
+  };
+
+  const handleOpenChat = () => {
+    if (!activeSOS) return;
+    setOptionsOpen(false);
+    history.push(`/chat/${activeSOS.id}`);
+  };
+
+  const handleOpenCalm = () => {
+    setOptionsOpen(false);
+    history.push('/tabs/calm');
+  };
+
+  const handleCancelActiveSOS = async () => {
+    if (!activeSOS) return;
+    setOptionsOpen(false);
+    try {
+      await cancelMySOS(activeSOS.id);
+      toast.success('تم إلغاء طلب النجدة • أنت بخير الآن 💚', { duration: 4000 });
+    } catch (err) {
+      console.error('[sos] فشل الإلغاء:', err);
+      toast.error('فشل إلغاء الطلب');
+    }
+  };
 
   // مستلِم SMS في وضع offline (أوّل جهة متاحة)
   const smsRecipients = profile ? pickSmsRecipients(profile) : [];
@@ -148,8 +182,8 @@ export const HomePage: FC = () => {
             justifyContent: 'space-between', alignItems: 'center',
           }}>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: colors.text }}>سند</div>
-              <div style={{ fontSize: 12, color: colors.textMuted }}>مرحباً، {studentName} 👋</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: colors.text }}>نبض</div>
+              <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>مرحباً، {studentName} 👋</div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               {/* زر المحادثات */}
@@ -225,7 +259,7 @@ export const HomePage: FC = () => {
             padding: '20px 0',
           }}>
             <SOSButton onTrigger={openSOSConfirm} />
-            <div style={{ fontSize: 12, color: colors.textMuted }}>
+            <div style={{ fontSize: 15, color: colors.textMuted, fontWeight: 500 }}>
               لمسة واحدة لإرسال طلب مساعدة فوري
             </div>
             <QuickActions
@@ -254,6 +288,18 @@ export const HomePage: FC = () => {
           offline={!online}
           smsRecipient={primarySmsRecipient?.name}
         />
+
+        {/* شيت خيارات عند ضغط SOS مع وجود طلب نشط */}
+        {activeSOS && (
+          <ActiveSOSOptionsSheet
+            isOpen={optionsOpen}
+            onClose={() => setOptionsOpen(false)}
+            request={activeSOS}
+            onOpenChat={handleOpenChat}
+            onOpenCalm={handleOpenCalm}
+            onCancelSOS={handleCancelActiveSOS}
+          />
+        )}
       </IonContent>
     </IonPage>
   );

@@ -21,7 +21,7 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     icon: 'shield', emoji: '🛡️',
-    title: 'مرحباً بك في سند',
+    title: 'مرحباً بك في نبض',
     subtitle: 'تطبيق طوارئ مصمَّم خصيصاً لك',
     bullets: [
       { emoji: '🤝', text: 'حماية ودعم للطلاب ذوي الإعاقة' },

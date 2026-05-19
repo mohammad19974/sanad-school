@@ -34,7 +34,7 @@ export const SplashScreen: FC = () => (
     {/* الاسم */}
     <div style={{
       fontSize: 36, fontWeight: 800, color: colors.white, marginBottom: 6,
-    }}>سند</div>
+    }}>نبض</div>
 
     {/* الشعار */}
     <div style={{

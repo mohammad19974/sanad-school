@@ -91,15 +91,15 @@ export const ProfilePage: FC = () => {
                 <Icon name="user" size={32} color={colors.white} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 800, color: colors.text }}>
+                <div style={{ fontSize: 21, fontWeight: 800, color: colors.text }}>
                   {draft.name || 'الطالب'}
                 </div>
-                <div style={{ fontSize: 11, color: colors.textMuted }}>
+                <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 2 }}>
                   {draft.grade || 'الصف الدراسي'} · {draft.disability || 'نوع الإعاقة'}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: colors.success }} />
-                  <span style={{ fontSize: 11, color: colors.success, fontWeight: 600 }}>حالة: آمن</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: colors.success }} />
+                  <span style={{ fontSize: 13, color: colors.success, fontWeight: 700 }}>حالة: آمن</span>
                 </div>
               </div>
               <button
@@ -198,10 +198,10 @@ export const ProfilePage: FC = () => {
                 fontSize: 22,
               }}>📱</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: colors.white }}>
+                <div style={{ fontSize: 16, fontWeight: 800, color: colors.white }}>
                   بطاقة الطوارئ الذكيّة (QR)
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
                   اضغط — يمسحها الممرّض ليرى بياناتك الحيويّة فوراً
                 </div>
               </div>
@@ -255,7 +255,7 @@ export const ProfilePage: FC = () => {
 
 const SectionTitle: FC<{ children: string }> = ({ children }) => (
   <div style={{
-    fontSize: 11, fontWeight: 700, color: colors.textMuted,
+    fontSize: 13, fontWeight: 700, color: colors.textMuted,
     fontFamily, padding: '2px 4px',
   }}>{children}</div>
 );
@@ -287,7 +287,7 @@ const SettingRow: FC<{
     }}>
       <Icon name={icon} size={17} color={colors.primary} />
     </div>
-    <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: colors.text, fontFamily }}>
+    <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: colors.text, fontFamily }}>
       {label}
     </span>
     <Toggle value={value} onChange={onChange} />

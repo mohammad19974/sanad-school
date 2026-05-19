@@ -31,8 +31,8 @@ export const CalmPage: FC = () => {
           fontFamily, direction: 'rtl',
         }}>
           <div style={{ padding: '20px 20px 6px' }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: colors.white }}>مركز التهدئة</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>أنت بأمان. تنفس معي.</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: colors.white }}>مركز التهدئة</div>
+            <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>أنت بأمان. تنفس معي.</div>
           </div>
 
           {/* تابات */}
@@ -50,7 +50,7 @@ export const CalmPage: FC = () => {
                   border: 'none', cursor: 'pointer',
                   background: tab === t.id ? colors.white : 'transparent',
                   color: tab === t.id ? colors.primaryDark : 'rgba(255,255,255,0.8)',
-                  fontSize: 11, fontWeight: 700, fontFamily,
+                  fontSize: 13, fontWeight: 700, fontFamily,
                   transition: 'all 0.2s',
                 }}
               >{t.label}</button>
@@ -83,8 +83,8 @@ export const CalmPage: FC = () => {
                     <Icon name="snake" size={28} color={colors.white} />
                   </div>
                   <div style={{ textAlign: 'right', flex: 1 }}>
-                    <div style={{ fontSize: 16, fontWeight: 800 }}>🐍 لعبة الثعبان</div>
-                    <div style={{ fontSize: 12, opacity: 0.85 }}>كلاسيكية ممتعة للتشتيت اللطيف</div>
+                    <div style={{ fontSize: 18, fontWeight: 800 }}>🐍 لعبة الثعبان</div>
+                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>كلاسيكية ممتعة للتشتيت اللطيف</div>
                   </div>
                 </button>
 
@@ -105,8 +105,8 @@ export const CalmPage: FC = () => {
                     <Icon name="memory" size={28} color={colors.white} />
                   </div>
                   <div style={{ textAlign: 'right', flex: 1 }}>
-                    <div style={{ fontSize: 16, fontWeight: 800 }}>🧠 لعبة الذاكرة</div>
-                    <div style={{ fontSize: 12, opacity: 0.85 }}>اعثر على الأزواج المتطابقة</div>
+                    <div style={{ fontSize: 18, fontWeight: 800 }}>🧠 لعبة الذاكرة</div>
+                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>اعثر على الأزواج المتطابقة</div>
                   </div>
                 </button>
               </div>

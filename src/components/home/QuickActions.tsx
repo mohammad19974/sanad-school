@@ -31,21 +31,21 @@ export const QuickActions: FC<Props> = ({ onAmbulance, onShelter, onCalm }) => {
           key={a.label}
           onClick={a.onClick}
           style={{
-            flex: 1, padding: '12px 4px', borderRadius: 16,
+            flex: 1, padding: '14px 6px', borderRadius: 16,
             background: colors.bgCard, border: `1.5px solid ${colors.bgDark}`,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
             cursor: 'pointer', boxShadow: `0 2px 8px ${colors.cardShadow}`,
             fontFamily,
           }}
         >
           <div style={{
-            width: 40, height: 40, borderRadius: 12,
+            width: 46, height: 46, borderRadius: 14,
             background: `${a.color}18`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Icon name={a.icon} size={22} color={a.color} />
+            <Icon name={a.icon} size={26} color={a.color} />
           </div>
-          <span style={{ fontSize: 11, fontWeight: 700, color: colors.text, fontFamily }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: colors.text, fontFamily }}>
             {a.label}
           </span>
         </button>

@@ -92,7 +92,7 @@ export const LoginPage: FC = () => {
             }}>
               <Icon name="shield" size={42} color={colors.white} />
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: colors.text, marginTop: 14 }}>سند</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: colors.text, marginTop: 14 }}>نبض</div>
             <div style={{ fontSize: 13, color: colors.textMuted }}>تطبيق الطوارئ المدرسية</div>
           </div>
 

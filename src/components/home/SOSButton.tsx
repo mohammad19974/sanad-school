@@ -35,22 +35,22 @@ export const SOSButton: FC<Props> = ({ onTrigger, disabled = false }) => {
         disabled={disabled}
         aria-label="إرسال طلب نجدة"
         style={{
-          width: 148, height: 148, borderRadius: '50%',
+          width: 168, height: 168, borderRadius: '50%',
           background: pressed
             ? colors.primaryDark
             : `linear-gradient(135deg, ${colors.primaryDark}, ${colors.primary})`,
           border: `4px solid ${colors.primaryLight}`,
           boxShadow: `0 8px 32px ${colors.pulse}`,
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 6,
+          gap: 8,
           cursor: disabled ? 'default' : 'pointer',
           transition: 'all 0.15s',
           transform: pressed ? 'scale(0.92)' : 'scale(1)',
           animation: 'breathe 3s ease-in-out infinite',
         }}
       >
-        <Icon name="sos" size={40} color={colors.white} />
-        <span style={{ fontSize: 16, fontWeight: 800, color: colors.white, fontFamily }}>
+        <Icon name="sos" size={46} color={colors.white} />
+        <span style={{ fontSize: 19, fontWeight: 800, color: colors.white, fontFamily }}>
           اضغط للنجدة
         </span>
       </button>

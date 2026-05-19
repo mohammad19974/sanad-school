@@ -1,6 +1,6 @@
 {
-  "name": "sanad-functions",
-  "description": "Cloud Functions for Sanad — emergency dispatch & notifications",
+  "name": "nabd-functions",
+  "description": "Cloud Functions for Nabd — emergency dispatch & notifications",
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",

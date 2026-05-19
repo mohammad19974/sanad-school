@@ -108,6 +108,15 @@ export const fetchLatestActiveSOS = async (studentId: string): Promise<SOSReques
   return docToSOS(d.id, d.data());
 };
 
+/** الطالب يُلغي طلبه الخاص — مسموح حسب قواعد Firestore */
+export const cancelMySOS = async (requestId: string): Promise<void> => {
+  const ref = doc(db, COL, requestId);
+  await updateDoc(ref, {
+    status: 'cancelled',
+    resolvedAt: serverTimestamp(),
+  });
+};
+
 /** المنسّق يُغيّر حالة الطلب */
 export const updateSOSStatus = async (
   requestId: string,

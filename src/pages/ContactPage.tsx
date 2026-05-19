@@ -71,8 +71,8 @@ export const ContactPage: FC = () => {
           background: colors.bg, fontFamily, direction: 'rtl',
         }}>
           <div style={{ padding: '20px 20px 6px' }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: colors.text }}>التواصل الفوري</div>
-            <div style={{ fontSize: 12, color: colors.textMuted }}>اتصل بلمسة واحدة</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: colors.text }}>التواصل الفوري</div>
+            <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>اتصل بلمسة واحدة</div>
           </div>
 
           <div style={{
@@ -99,11 +99,11 @@ export const ContactPage: FC = () => {
                 fontFamily,
                 animation: listening ? 'breathe 1s ease-in-out infinite' : 'none',
               }}>
-              <Icon name="mic" size={21} color={colors.white} />
-              <span style={{ fontSize: 14, fontWeight: 700, color: colors.white }}>
+              <Icon name="mic" size={24} color={colors.white} />
+              <span style={{ fontSize: 16, fontWeight: 700, color: colors.white }}>
                 {listening
                   ? '🔴 يستمع الآن... قُل "نجدة"'
-                  : 'اضغط وتكلم — سند يستمع'}
+                  : 'اضغط وتكلم — نبض يستمع'}
               </span>
             </button>
 

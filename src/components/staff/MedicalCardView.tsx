@@ -70,7 +70,7 @@ export const MedicalCardView: FC<Props> = ({ card, showFooter = true }) => (
         fontSize: 10, color: colors.textLight, textAlign: 'center',
         paddingTop: 10, borderTop: `1px dashed ${colors.bgDark}`,
       }}>
-        صادرة من تطبيق سند • {new Date(card.t).toLocaleString('ar', {
+        صادرة من تطبيق نبض • {new Date(card.t).toLocaleString('ar', {
           day: 'numeric', month: 'short', year: 'numeric',
           hour: '2-digit', minute: '2-digit',
         })}

@@ -1,12 +1,12 @@
-// Service Worker لتطبيق سند — يدعم offline + caching ذكي
+// Service Worker لتطبيق نبض — يدعم offline + caching ذكي
 // الاستراتيجية:
 //   • navigation requests: network-first → fallback لـ index.html من الـ cache
 //   • assets ثابتة (JS/CSS/images/sounds): stale-while-revalidate
 //   • Firebase/Google APIs: pass-through (Firestore عنده offline خاصّ به)
 //   • POST/PUT: لا تُكاش (دائماً online)
 
-const VERSION = 'sanad-v4-categories';
-const CACHE_NAME = `sanad-cache-${VERSION}`;
+const VERSION = 'nabd-v1-rename';
+const CACHE_NAME = `nabd-cache-${VERSION}`;
 
 // الأصول الأساسيّة التي تُحمَّل عند install
 const APP_SHELL = [

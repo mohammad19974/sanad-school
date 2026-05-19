@@ -125,7 +125,7 @@ export const MedicalCardPage: FC = () => {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 16, fontWeight: 800, color: colors.text }}>
-                        سند — بطاقة طوارئ طبية
+                        نبض — بطاقة طوارئ طبية
                       </div>
                       <div style={{ fontSize: 11, color: colors.textMuted }}>
                         Emergency Medical Card • {new Date().toLocaleDateString('ar')}

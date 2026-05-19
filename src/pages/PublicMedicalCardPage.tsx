@@ -35,7 +35,7 @@ export const PublicMedicalCardPage: FC = () => {
             <div style={{ fontSize: 14, opacity: 0.85, marginBottom: 4 }}>
               🩺 بطاقة طوارئ طبية
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800 }}>سند</div>
+            <div style={{ fontSize: 28, fontWeight: 800 }}>نبض</div>
           </div>
 
           <div style={{ padding: '0 16px 24px' }}>
