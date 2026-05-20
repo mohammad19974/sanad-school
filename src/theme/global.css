@@ -81,3 +81,15 @@ input { font-family: inherit; }
 
 /* ─── إخفاء شريط التمرير في عناصر Ionic القابلة للتمرير ─── */
 ion-content::part(scroll) { scrollbar-width: thin; }
+
+/* ─── وضع "النصوص الكبيرة" — يفعّل من إعدادات الملف الشخصي ─── */
+/* zoom يكبّر كل شيء داخل التطبيق: نصوص، أزرار، أيقونات، صور */
+html.sanad-large-text { zoom: 1.18; }
+
+/* بعض المتصفّحات لا تدعم zoom — fallback عبر font-size على الجذر */
+@supports not (zoom: 1) {
+  html.sanad-large-text {
+    font-size: 118%;
+  }
+  html.sanad-large-text body { font-size: 118%; }
+}

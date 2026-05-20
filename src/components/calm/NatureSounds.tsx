@@ -30,7 +30,7 @@ export const NatureSounds: FC = () => {
       <div style={{ opacity: playing ? 1 : 0.4, transition: 'opacity 0.3s' }}>
         <WaveBar />
       </div>
-      <div style={{ fontSize: 14, color: colors.white, fontFamily, fontWeight: 600 }}>
+      <div style={{ fontSize: 17, color: colors.white, fontFamily, fontWeight: 700 }}>
         {playing ? 'يعمل صوت...' : 'أصوات الطبيعة الهادئة'}
       </div>
       <div style={{
@@ -43,11 +43,11 @@ export const NatureSounds: FC = () => {
               key={s.label}
               onClick={() => toggle(s.src)}
               style={{
-                padding: '10px 14px', borderRadius: 50,
+                padding: '12px 18px', borderRadius: 50,
                 background: active ? colors.white : 'rgba(255,255,255,0.18)',
                 border: `1.5px solid ${active ? colors.white : 'rgba(255,255,255,0.35)'}`,
                 color: active ? colors.primaryDark : colors.white,
-                fontSize: 13, fontFamily, fontWeight: 600,
+                fontSize: 16, fontFamily, fontWeight: 700,
                 cursor: 'pointer',
               }}
             >{s.label}</button>

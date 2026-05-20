@@ -9,7 +9,6 @@ import { Icon } from '../ui/Icon';
 import { useProfileContext } from '../context/ProfileContext';
 import { signOut } from '../api/authApi';
 import { useToast } from '../hooks/useToast';
-import { useOnboarding } from '../hooks/useOnboarding';
 import { useHistory } from 'react-router-dom';
 import { colors, fontFamily } from '../theme/tokens';
 import {
@@ -28,14 +27,8 @@ export const ProfilePage: FC = () => {
   const [draft, setDraft] = useState<StudentProfile>(profile ?? emptyProfile(''));
   const history = useHistory();
   const toast = useToast();
-  const { reset: resetOnboarding } = useOnboarding();
 
   useEffect(() => { if (profile) setDraft(profile); }, [profile]);
-
-  const replayOnboarding = () => {
-    resetOnboarding();
-    history.push('/onboarding');
-  };
 
   const persist = async () => {
     setSaving(true);
@@ -69,8 +62,18 @@ export const ProfilePage: FC = () => {
     setDraft((prev) => ({ ...prev, guardian: { ...prev.guardian, ...patch } }));
   };
 
-  const setSetting = (key: keyof StudentProfile['settings'], value: boolean) => {
-    setDraft((prev) => ({ ...prev, settings: { ...prev.settings, [key]: value } }));
+  // تبديل إعدادات إمكانية الوصول يحفظ فوراً (بدون انتظار زر "حفظ")
+  const setSetting = async (key: keyof StudentProfile['settings'], value: boolean) => {
+    const nextSettings = { ...draft.settings, [key]: value };
+    setDraft((prev) => ({ ...prev, settings: nextSettings }));
+    try {
+      await save({ ...draft, settings: nextSettings });
+    } catch (err) {
+      console.error('[settings] فشل الحفظ:', err);
+      toast.error('فشل حفظ الإعداد');
+      // إرجاع للوضع السابق
+      setDraft((prev) => ({ ...prev, settings: { ...prev.settings, [key]: !value } }));
+    }
   };
 
   return (
@@ -219,19 +222,6 @@ export const ProfilePage: FC = () => {
               }}>
               <span>📨</span>
               <span>سجل رسائل SMS الطوارئ</span>
-            </button>
-
-            <button
-              onClick={replayOnboarding}
-              style={{
-                background: 'transparent', border: `1.5px solid ${colors.bgDark}`,
-                color: colors.primary, padding: '10px', borderRadius: 14,
-                fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                marginTop: 8,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}>
-              <span>👋</span>
-              <span>إعادة عرض شاشة الترحيب</span>
             </button>
 
             <button

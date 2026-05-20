@@ -19,11 +19,11 @@ export const CalmMessages: FC = () => (
   }}>
     {MESSAGES.map((m, i) => (
       <div key={i} style={{
-        padding: '13px 15px', borderRadius: 16,
+        padding: '16px 18px', borderRadius: 16,
         background: 'rgba(255,255,255,0.16)',
       }}>
         <span style={{
-          fontSize: 14, color: colors.white, fontFamily, lineHeight: 1.6,
+          fontSize: 17, color: colors.white, fontFamily, lineHeight: 1.7, fontWeight: 600,
         }}>{m}</span>
       </div>
     ))}

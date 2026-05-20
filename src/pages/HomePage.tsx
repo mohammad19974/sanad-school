@@ -89,9 +89,13 @@ export const HomePage: FC = () => {
 
   const handleCancelActiveSOS = async () => {
     if (!activeSOS) return;
+    const cancelId = activeSOS.id;
     setOptionsOpen(false);
     try {
-      await cancelMySOS(activeSOS.id);
+      await cancelMySOS(cancelId);
+      // مسح فوري للحالة المحليّة — لا ننتظر دورة الاشتراك
+      setActiveSOS((curr) => (curr && curr.id === cancelId ? null : curr));
+      setSosSent(false);
       toast.success('تم إلغاء طلب النجدة • أنت بخير الآن 💚', { duration: 4000 });
     } catch (err) {
       console.error('[sos] فشل الإلغاء:', err);

@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { OfflineBanner } from './components/OfflineBanner';
+import { LargeTextEffect } from './components/LargeTextEffect';
 
 // إعداد Ionic React
 setupIonicReact({ mode: 'ios' });
@@ -17,6 +18,7 @@ const App: FC = () => (
     <OfflineBanner />
     <AuthProvider>
       <ProfileProvider>
+        <LargeTextEffect />
         <AppRoutes />
       </ProfileProvider>
     </AuthProvider>

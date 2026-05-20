@@ -31,8 +31,8 @@ export const CalmPage: FC = () => {
           fontFamily, direction: 'rtl',
         }}>
           <div style={{ padding: '20px 20px 6px' }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: colors.white }}>مركز التهدئة</div>
-            <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>أنت بأمان. تنفس معي.</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: colors.white }}>مركز التهدئة</div>
+            <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.85)', marginTop: 4 }}>أنت بأمان. تنفس معي.</div>
           </div>
 
           {/* تابات */}
@@ -46,11 +46,11 @@ export const CalmPage: FC = () => {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 style={{
-                  flex: 1, padding: '8px 2px', borderRadius: 10,
+                  flex: 1, padding: '10px 2px', borderRadius: 10,
                   border: 'none', cursor: 'pointer',
                   background: tab === t.id ? colors.white : 'transparent',
-                  color: tab === t.id ? colors.primaryDark : 'rgba(255,255,255,0.8)',
-                  fontSize: 13, fontWeight: 700, fontFamily,
+                  color: tab === t.id ? colors.primaryDark : 'rgba(255,255,255,0.85)',
+                  fontSize: 15, fontWeight: 700, fontFamily,
                   transition: 'all 0.2s',
                 }}
               >{t.label}</button>

@@ -156,12 +156,12 @@ export const BreathingExercise: FC = () => {
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
           }}>
             <div style={{
-              fontSize: 56, fontWeight: 800, color: colors.white, fontFamily, lineHeight: 1,
+              fontSize: 64, fontWeight: 800, color: colors.white, fontFamily, lineHeight: 1,
             }}>
               {isRunning ? displaySeconds : '∞'}
             </div>
             <div style={{
-              fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.9)', fontFamily,
+              fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.95)', fontFamily,
             }}>
               {phaseLabel[phase]}
             </div>
@@ -172,7 +172,7 @@ export const BreathingExercise: FC = () => {
       {/* تلميح + إجمالي وقت التمرين */}
       <div style={{
         textAlign: 'center', fontFamily,
-        fontSize: 12, color: 'rgba(255,255,255,0.75)',
+        fontSize: 15, color: 'rgba(255,255,255,0.85)', fontWeight: 600,
       }}>
         {isRunning
           ? `الدورة ${cycle + 1} من ${CYCLES_TARGET} • تقنية 4-7-8`
