@@ -2,13 +2,18 @@
 
 import type { FC } from 'react';
 import { Icon } from '../../ui/Icon';
+import { useLanguage } from '../../context/LanguageContext';
 import { colors, fontFamily } from '../../theme/tokens';
 
 interface Props {
   sosSent: boolean;
 }
 
-export const StatusBanner: FC<Props> = ({ sosSent }) => (
+export const StatusBanner: FC<Props> = ({ sosSent }) => {
+  const { lang } = useLanguage();
+  const sentText  = lang === 'he' ? '✅ בקשת העזרה נשלחה!' : '✅ تم إرسال طلب المساعدة!';
+  const safeText  = lang === 'he' ? '📍 מיקומך זוהה — אתה באזור בטוח יחסית' : '📍 موقعك محدد — أنت في منطقة آمنة نسبياً';
+  return (
   <div
     style={{
       margin: '6px 16px',
@@ -28,7 +33,8 @@ export const StatusBanner: FC<Props> = ({ sosSent }) => (
       color: sosSent ? colors.white : colors.primary,
       fontWeight: 600,
     }}>
-      {sosSent ? '✅ تم إرسال طلب المساعدة!' : '📍 موقعك محدد — أنت في منطقة آمنة نسبياً'}
+      {sosSent ? sentText : safeText}
     </span>
   </div>
-);
+  );
+};

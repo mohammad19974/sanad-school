@@ -3,23 +3,26 @@
 import type { FC } from 'react';
 import { WaveBar } from '../../ui/WaveBar';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useLanguage } from '../../context/LanguageContext';
 import { colors, fontFamily } from '../../theme/tokens';
 
 interface SoundOption {
-  label: string;
+  ar: string;
+  he: string;
   src: string;
 }
 
 const SOUNDS: SoundOption[] = [
-  { label: '🌊 أمواج', src: '/sounds/waves.wav' },
-  { label: '🌧️ مطر',   src: '/sounds/rain.wav' },
-  { label: '🍃 ريح',   src: '/sounds/wind.wav' },
-  { label: '🔥 نار',   src: '/sounds/fire.wav' },
-  { label: '🦅 طيور',  src: '/sounds/birds.wav' },
+  { ar: '🌊 أمواج', he: '🌊 גלים',    src: '/sounds/waves.wav' },
+  { ar: '🌧️ مطر',   he: '🌧️ גשם',     src: '/sounds/rain.wav' },
+  { ar: '🍃 ريح',   he: '🍃 רוח',     src: '/sounds/wind.wav' },
+  { ar: '🔥 نار',   he: '🔥 אש',      src: '/sounds/fire.wav' },
+  { ar: '🦅 طيور',  he: '🦅 ציפורים', src: '/sounds/birds.wav' },
 ];
 
 export const NatureSounds: FC = () => {
   const { currentSrc, toggle } = useAudioPlayer();
+  const { lang } = useLanguage();
   const playing = currentSrc !== null;
 
   return (
@@ -31,16 +34,19 @@ export const NatureSounds: FC = () => {
         <WaveBar />
       </div>
       <div style={{ fontSize: 17, color: colors.white, fontFamily, fontWeight: 700 }}>
-        {playing ? 'يعمل صوت...' : 'أصوات الطبيعة الهادئة'}
+        {playing
+          ? (lang === 'he' ? 'מתנגן...' : 'يعمل صوت...')
+          : (lang === 'he' ? 'צלילי טבע מרגיעים' : 'أصوات الطبيعة الهادئة')}
       </div>
       <div style={{
         display: 'flex', gap: 9, flexWrap: 'wrap', justifyContent: 'center',
       }}>
         {SOUNDS.map((s) => {
           const active = currentSrc === s.src;
+          const label = lang === 'he' ? s.he : s.ar;
           return (
             <button
-              key={s.label}
+              key={s.src}
               onClick={() => toggle(s.src)}
               style={{
                 padding: '12px 18px', borderRadius: 50,
@@ -50,7 +56,7 @@ export const NatureSounds: FC = () => {
                 fontSize: 16, fontFamily, fontWeight: 700,
                 cursor: 'pointer',
               }}
-            >{s.label}</button>
+            >{label}</button>
           );
         })}
       </div>

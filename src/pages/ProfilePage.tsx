@@ -7,10 +7,12 @@ import { ChipSelector } from '../components/profile/ChipSelector';
 import { Toggle } from '../ui/Toggle';
 import { Icon } from '../ui/Icon';
 import { useProfileContext } from '../context/ProfileContext';
+import { useLanguage } from '../context/LanguageContext';
 import { signOut } from '../api/authApi';
 import { useToast } from '../hooks/useToast';
 import { useHistory } from 'react-router-dom';
 import { colors, fontFamily } from '../theme/tokens';
+import type { AppLang } from '../types/profile';
 import {
   emptyProfile, type StudentProfile,
   type GradeLevel, type DisabilityType, type BloodType,
@@ -22,6 +24,7 @@ const BLOODS: readonly BloodType[] = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+',
 
 export const ProfilePage: FC = () => {
   const { profile, save } = useProfileContext();
+  const { t, lang, setLang } = useLanguage();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving]   = useState(false);
   const [draft, setDraft] = useState<StudentProfile>(profile ?? emptyProfile(''));
@@ -35,10 +38,10 @@ export const ProfilePage: FC = () => {
     try {
       await save(draft);
       setEditing(false);
-      toast.success('تم حفظ التعديلات');
+      toast.success(t('profile.saved'));
     } catch (err) {
       console.error(err);
-      toast.error('فشل الحفظ. حاول مرّة أخرى');
+      toast.error(t('profile.save.failed'));
     } finally {
       setSaving(false);
     }
@@ -47,11 +50,15 @@ export const ProfilePage: FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.info('تم تسجيل الخروج');
+      toast.info(lang === 'he' ? 'התנתקת' : 'تم تسجيل الخروج');
       history.replace('/auth/login');
     } catch {
-      toast.error('فشل تسجيل الخروج');
+      toast.error(lang === 'he' ? 'ההתנתקות נכשלה' : 'فشل تسجيل الخروج');
     }
+  };
+
+  const pickLang = async (l: AppLang) => {
+    await setLang(l);
   };
 
   const setField = <K extends keyof StudentProfile>(key: K, value: StudentProfile[K]) => {
@@ -95,14 +102,14 @@ export const ProfilePage: FC = () => {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 21, fontWeight: 800, color: colors.text }}>
-                  {draft.name || 'الطالب'}
+                  {draft.name || (lang === 'he' ? 'תלמיד' : 'الطالب')}
                 </div>
                 <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 2 }}>
-                  {draft.grade || 'الصف الدراسي'} · {draft.disability || 'نوع الإعاقة'}
+                  {draft.grade || t('profile.field.grade')} · {draft.disability || t('profile.field.disability')}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
                   <div style={{ width: 7, height: 7, borderRadius: '50%', background: colors.success }} />
-                  <span style={{ fontSize: 13, color: colors.success, fontWeight: 700 }}>حالة: آمن</span>
+                  <span style={{ fontSize: 13, color: colors.success, fontWeight: 700 }}>{t('profile.status.safe')}</span>
                 </div>
               </div>
               <button
@@ -121,7 +128,7 @@ export const ProfilePage: FC = () => {
                   fontSize: 12, fontWeight: 700, fontFamily,
                   color: editing ? colors.white : colors.primary,
                 }}>
-                  {saving ? 'جاري...' : editing ? 'حفظ' : 'تعديل'}
+                  {saving ? t('common.loading') : editing ? t('common.save') : t('common.edit')}
                 </span>
               </button>
             </div>
@@ -131,57 +138,57 @@ export const ProfilePage: FC = () => {
             flex: 1, overflowY: 'auto', padding: '12px 16px',
             display: 'flex', flexDirection: 'column', gap: 10,
           }}>
-            <SectionTitle>المعلومات الشخصية</SectionTitle>
+            <SectionTitle>{t('profile.section.personal')}</SectionTitle>
             <Section>
-              <ProfileField label="الاسم الكامل" icon="user" value={draft.name}
-                placeholder="أدخل اسمك" editing={editing}
+              <ProfileField label={t('profile.field.name')} icon="user" value={draft.name}
+                placeholder={lang === 'he' ? 'הזן את שמך' : 'أدخل اسمك'} editing={editing}
                 onChange={(v) => setField('name', v)} />
-              <ProfileField label="رقم الهوية" icon="shield" value={draft.id}
-                placeholder="أدخل رقم الهوية" editing={editing}
+              <ProfileField label={t('profile.field.id')} icon="shield" value={draft.id}
+                placeholder={lang === 'he' ? 'הזן ת.ז.' : 'أدخل رقم الهوية'} editing={editing}
                 onChange={(v) => setField('id', v)} />
-              <ProfileField label="رقم الجوال" icon="phone" value={draft.phone}
+              <ProfileField label={t('profile.field.phone')} icon="phone" value={draft.phone}
                 placeholder="+972 50 123 4567" type="tel" editing={editing}
                 onChange={(v) => setField('phone', v)} />
-              <ChipSelector label="الصف الدراسي" options={GRADES} value={draft.grade}
+              <ChipSelector label={t('profile.field.grade')} options={GRADES} value={draft.grade}
                 editing={editing} onChange={(v) => setField('grade', v)} />
-              <ChipSelector label="نوع الإعاقة" options={DISABILITIES} value={draft.disability}
+              <ChipSelector label={t('profile.field.disability')} options={DISABILITIES} value={draft.disability}
                 editing={editing} onChange={(v) => setField('disability', v)} />
             </Section>
 
-            <SectionTitle>المعلومات الطبية</SectionTitle>
+            <SectionTitle>{t('profile.section.medical')}</SectionTitle>
             <Section>
-              <ChipSelector label="فصيلة الدم" options={BLOODS} value={draft.blood}
+              <ChipSelector label={t('profile.field.blood')} options={BLOODS} value={draft.blood}
                 editing={editing} variant="square" activeColor={colors.danger}
                 onChange={(v) => setField('blood', v)} />
-              <ProfileField label="الأدوية الدائمة" icon="brain" value={draft.meds}
-                placeholder="مثل: ريتالين 10 مجم" editing={editing}
+              <ProfileField label={t('profile.field.meds')} icon="brain" value={draft.meds}
+                placeholder={lang === 'he' ? 'למשל: ריטלין 10 מ"ג' : 'مثل: ريتالين 10 مجم'} editing={editing}
                 onChange={(v) => setField('meds', v)} />
-              <ProfileField label="الحساسية" icon="bell" value={draft.allergies}
-                placeholder="مثل: بنسلين، فول السودان" editing={editing}
+              <ProfileField label={t('profile.field.allergies')} icon="bell" value={draft.allergies}
+                placeholder={lang === 'he' ? 'למשל: פניצילין, בוטנים' : 'مثل: بنسلين، فول السودان'} editing={editing}
                 onChange={(v) => setField('allergies', v)} />
-              <ProfileField label="اسم ولي الأمر" icon="family" value={draft.guardian.name}
-                placeholder="اسم ولي الأمر" editing={editing}
+              <ProfileField label={t('profile.field.guardian')} icon="family" value={draft.guardian.name}
+                placeholder={t('profile.field.guardian')} editing={editing}
                 onChange={(v) => setGuardian({ name: v })} />
-              <ProfileField label="رقم ولي الأمر" icon="phone" value={draft.guardian.phone}
+              <ProfileField label={t('profile.field.guardian.phone')} icon="phone" value={draft.guardian.phone}
                 placeholder="+972 50 123 4567" type="tel" editing={editing}
                 onChange={(v) => setGuardian({ phone: v })} />
             </Section>
 
-            <SectionTitle>إمكانية الوصول</SectionTitle>
+            <SectionTitle>{t('profile.section.access')}</SectionTitle>
             <Section>
               <SettingRow
-                label='🎤 التفعيل الصوتي — قُل "نجدة" لطلب المساعدة' icon="mic"
+                label={t('profile.access.voice')} icon="mic"
                 value={draft.settings.voiceInput}
                 onChange={(v) => setSetting('voiceInput', v)} />
               <SettingRow
-                label="إشعارات الطوارئ" icon="bell"
+                label={t('profile.access.notify')} icon="bell"
                 value={draft.settings.notify}
                 onChange={(v) => setSetting('notify', v)} />
               <SettingRow
-                label="النصوص الكبيرة" icon="brain"
+                label={t('profile.access.large')} icon="brain"
                 value={draft.settings.largeText}
-                onChange={(v) => setSetting('largeText', v)}
-                last />
+                onChange={(v) => setSetting('largeText', v)} />
+              <LanguageRow lang={lang} onChange={pickLang} t={t} />
             </Section>
 
             {/* بطاقة الطوارئ مع QR */}
@@ -202,10 +209,10 @@ export const ProfilePage: FC = () => {
               }}>📱</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 16, fontWeight: 800, color: colors.white }}>
-                  بطاقة الطوارئ الذكيّة (QR)
+                  {t('profile.qr')}
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
-                  اضغط — يمسحها الممرّض ليرى بياناتك الحيويّة فوراً
+                  {t('profile.qr.desc')}
                 </div>
               </div>
               <span style={{ color: colors.white, fontSize: 18, opacity: 0.7 }}>‹</span>
@@ -221,7 +228,7 @@ export const ProfilePage: FC = () => {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               }}>
               <span>📨</span>
-              <span>سجل رسائل SMS الطوارئ</span>
+              <span>{t('profile.sms.log')}</span>
             </button>
 
             <button
@@ -232,7 +239,7 @@ export const ProfilePage: FC = () => {
                 fontFamily, fontSize: 13, fontWeight: 700, cursor: 'pointer',
                 marginTop: 8, marginBottom: 20,
               }}>
-              تسجيل الخروج
+              {t('profile.signout')}
             </button>
           </div>
         </div>
@@ -281,5 +288,43 @@ const SettingRow: FC<{
       {label}
     </span>
     <Toggle value={value} onChange={onChange} />
+  </div>
+);
+
+// صفّ اختيار لغة الواجهة — chips للعربي/العبري
+const LanguageRow: FC<{
+  lang: AppLang;
+  onChange: (l: AppLang) => Promise<void> | void;
+  t: (k: import('../i18n/translations').TranslationKey) => string;
+}> = ({ lang, onChange, t }) => (
+  <div style={{
+    display: 'flex', alignItems: 'center', gap: 10,
+    padding: '13px 14px',
+  }}>
+    <div style={{
+      width: 34, height: 34, borderRadius: 10,
+      background: `${colors.primary}15`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 17,
+    }}>🌐</div>
+    <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: colors.text, fontFamily }}>
+      {t('profile.access.lang')}
+    </span>
+    <div style={{ display: 'flex', gap: 6 }}>
+      {(['ar', 'he'] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => onChange(l)}
+          style={{
+            padding: '6px 12px', borderRadius: 50,
+            border: `1.5px solid ${lang === l ? colors.primary : colors.bgDark}`,
+            background: lang === l ? colors.primary : 'transparent',
+            color: lang === l ? colors.white : colors.text,
+            fontSize: 13, fontWeight: 700, fontFamily,
+            cursor: 'pointer',
+          }}
+        >{t(l === 'ar' ? 'lang.ar' : 'lang.he')}</button>
+      ))}
+    </div>
   </div>
 );

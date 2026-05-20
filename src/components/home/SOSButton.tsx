@@ -4,6 +4,7 @@ import { useState, type FC } from 'react';
 import { Icon } from '../../ui/Icon';
 import { PulseRing } from '../../ui/PulseRing';
 import { useHaptics } from '../../hooks/useHaptics';
+import { useLanguage } from '../../context/LanguageContext';
 import { colors, fontFamily } from '../../theme/tokens';
 
 interface Props {
@@ -14,6 +15,8 @@ interface Props {
 export const SOSButton: FC<Props> = ({ onTrigger, disabled = false }) => {
   const [pressed, setPressed] = useState(false);
   const haptics = useHaptics();
+  const { t, lang } = useLanguage();
+  const sosLabel = lang === 'he' ? 'לחץ להצלה' : 'اضغط للنجدة';
 
   const handleClick = async () => {
     if (disabled) return;
@@ -33,7 +36,7 @@ export const SOSButton: FC<Props> = ({ onTrigger, disabled = false }) => {
       <button
         onClick={handleClick}
         disabled={disabled}
-        aria-label="إرسال طلب نجدة"
+        aria-label={t('home.sos')}
         style={{
           width: 168, height: 168, borderRadius: '50%',
           background: pressed
@@ -51,7 +54,7 @@ export const SOSButton: FC<Props> = ({ onTrigger, disabled = false }) => {
       >
         <Icon name="sos" size={46} color={colors.white} />
         <span style={{ fontSize: 19, fontWeight: 800, color: colors.white, fontFamily }}>
-          اضغط للنجدة
+          {sosLabel}
         </span>
       </button>
     </div>

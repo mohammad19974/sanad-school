@@ -14,6 +14,7 @@ import { VoiceTriggerIndicator } from '../components/home/VoiceTriggerIndicator'
 import { Icon } from '../ui/Icon';
 import { useAuthContext } from '../context/AuthContext';
 import { useProfileContext } from '../context/ProfileContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useNotifications } from '../hooks/useNotifications';
 import { useStudentChatThreads } from '../hooks/useStudentChatThreads';
@@ -34,6 +35,7 @@ export const HomePage: FC = () => {
   const [activeSOS, setActiveSOS] = useState<SOSRequest | null>(null);
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
+  const { t, lang } = useLanguage();
   const { coords } = useGeolocation();
   const notif = useNotifications();
   const chats = useStudentChatThreads();
@@ -45,12 +47,13 @@ export const HomePage: FC = () => {
   // ─── التفعيل الصوتي ─────────────────────────
   // مُفعَّل فقط لو profile.settings.voiceInput = true
   const voiceEnabled = !!profile?.settings?.voiceInput;
+  const speechLang = lang === 'he' ? 'he-IL' : 'ar-SA';
   const voice = useVoiceTrigger(voiceEnabled, () => {
     // قائلاً "نجدة" → افتح مودال التأكيد (نفس مسلك زر SOS)
-    toast.info('🎤 تم اكتشاف نداء نجدة', { duration: 2500 });
+    toast.info(lang === 'he' ? '🎤 זוהתה קריאת הצלה' : '🎤 تم اكتشاف نداء نجدة', { duration: 2500 });
     setConfirmOpen(true);
-  });
-  const studentName = profile?.name || 'صديقي';
+  }, speechLang);
+  const studentName = profile?.name || (t('app.name') === 'נבד' ? 'חברי' : 'صديقي');
 
   // اشترك في طلبات SOS للطالب → اعرض النشط منها كـ banner
   useEffect(() => {
@@ -96,7 +99,7 @@ export const HomePage: FC = () => {
       // مسح فوري للحالة المحليّة — لا ننتظر دورة الاشتراك
       setActiveSOS((curr) => (curr && curr.id === cancelId ? null : curr));
       setSosSent(false);
-      toast.success('تم إلغاء طلب النجدة • أنت بخير الآن 💚', { duration: 4000 });
+      toast.success(t('home.sos.cancel.confirm'), { duration: 4000 });
     } catch (err) {
       console.error('[sos] فشل الإلغاء:', err);
       toast.error('فشل إلغاء الطلب');
@@ -186,8 +189,8 @@ export const HomePage: FC = () => {
             justifyContent: 'space-between', alignItems: 'center',
           }}>
             <div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: colors.text }}>نبض</div>
-              <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>مرحباً، {studentName} 👋</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: colors.text }}>{t('app.name')}</div>
+              <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>{t('home.greeting')}، {studentName} 👋</div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               {/* زر المحادثات */}
@@ -264,7 +267,7 @@ export const HomePage: FC = () => {
           }}>
             <SOSButton onTrigger={openSOSConfirm} />
             <div style={{ fontSize: 15, color: colors.textMuted, fontWeight: 500 }}>
-              لمسة واحدة لإرسال طلب مساعدة فوري
+              {t('home.subtitle')}
             </div>
             <QuickActions
               onAmbulance={() => history.push('/tabs/contact')}

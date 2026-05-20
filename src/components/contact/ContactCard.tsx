@@ -3,6 +3,7 @@
 import type { FC } from 'react';
 import { Icon, type IconName } from '../../ui/Icon';
 import { useToast } from '../../hooks/useToast';
+import { useLanguage } from '../../context/LanguageContext';
 import { colors, fontFamily } from '../../theme/tokens';
 
 export interface EmergencyContact {
@@ -17,9 +18,10 @@ interface Props { contact: EmergencyContact; }
 
 export const ContactCard: FC<Props> = ({ contact }) => {
   const toast = useToast();
+  const { t } = useLanguage();
 
   const dial = () => {
-    toast.info(`جاري الاتصال بـ ${contact.name}...`);
+    toast.info(`${t('contact.calling')} ${contact.name}...`);
     // tel: يفتح dialer النظام على Android والمتصفّح
     window.location.href = `tel:${contact.number}`;
   };
@@ -53,7 +55,7 @@ export const ContactCard: FC<Props> = ({ contact }) => {
         padding: '9px 16px', borderRadius: 50,
         background: contact.color, fontSize: 14, fontWeight: 700,
         color: colors.white, boxShadow: `0 3px 10px ${contact.color}55`,
-      }}>اتصال</div>
+      }}>{t('contact.dial')}</div>
     </button>
   );
 };

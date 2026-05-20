@@ -4,15 +4,17 @@
 import { useCallback, useEffect, useRef, useState, type FC } from 'react';
 import { PillButton } from '../../ui/PillButton';
 import { useHaptics } from '../../hooks/useHaptics';
+import { useLanguage } from '../../context/LanguageContext';
+import type { TranslationKey } from '../../i18n/translations';
 import { colors, fontFamily } from '../../theme/tokens';
 
 type Phase = 'idle' | 'inhale' | 'hold' | 'exhale';
 
-const phaseLabel: Record<Phase, string> = {
-  idle:   'استعد',
-  inhale: 'شهيق',
-  hold:   'احبس',
-  exhale: 'زفير',
+const phaseLabelKey: Record<Phase, TranslationKey> = {
+  idle:   'calm.breath.ready',
+  inhale: 'calm.breath.inhale',
+  hold:   'calm.breath.hold',
+  exhale: 'calm.breath.exhale',
 };
 
 // المدد بالميلي ثانية — تطبيق دقيق لتقنية 4-7-8
@@ -31,6 +33,7 @@ export const BreathingExercise: FC = () => {
   const phaseStartRef                   = useRef<number>(0);
   const rafRef                          = useRef<number | null>(null);
   const haptics                         = useHaptics();
+  const { t, lang }                     = useLanguage();
 
   const isRunning = phase !== 'idle';
 
@@ -163,7 +166,7 @@ export const BreathingExercise: FC = () => {
             <div style={{
               fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.95)', fontFamily,
             }}>
-              {phaseLabel[phase]}
+              {t(phaseLabelKey[phase])}
             </div>
           </div>
         </div>
@@ -175,16 +178,20 @@ export const BreathingExercise: FC = () => {
         fontSize: 15, color: 'rgba(255,255,255,0.85)', fontWeight: 600,
       }}>
         {isRunning
-          ? `الدورة ${cycle + 1} من ${CYCLES_TARGET} • تقنية 4-7-8`
-          : `${CYCLES_TARGET} دورات × ${totalSec} ث • تقنية تهدئة 4-7-8`}
+          ? (lang === 'he'
+              ? `סבב ${cycle + 1} מתוך ${CYCLES_TARGET} • טכניקת 4-7-8`
+              : `الدورة ${cycle + 1} من ${CYCLES_TARGET} • تقنية 4-7-8`)
+          : (lang === 'he'
+              ? `${CYCLES_TARGET} סבבים × ${totalSec} שנ' • טכניקת הרגעה 4-7-8`
+              : `${CYCLES_TARGET} دورات × ${totalSec} ث • تقنية تهدئة 4-7-8`)}
       </div>
 
       {/* الأزرار */}
       <div style={{ display: 'flex', gap: 10 }}>
         {!isRunning ? (
-          <PillButton onClick={start} variant="white">ابدأ التنفّس</PillButton>
+          <PillButton onClick={start} variant="white">{t('calm.breath.start')}</PillButton>
         ) : (
-          <PillButton onClick={stop} variant="outline">إيقاف</PillButton>
+          <PillButton onClick={stop} variant="outline">{t('calm.breath.stop')}</PillButton>
         )}
       </div>
     </div>

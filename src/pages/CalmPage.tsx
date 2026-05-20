@@ -7,20 +7,23 @@ import { BreathingExercise } from '../components/calm/BreathingExercise';
 import { CalmMessages } from '../components/calm/CalmMessages';
 import { NatureSounds } from '../components/calm/NatureSounds';
 import { Icon } from '../ui/Icon';
+import { useLanguage } from '../context/LanguageContext';
+import type { TranslationKey } from '../i18n/translations';
 import { colors, fontFamily } from '../theme/tokens';
 
 type Tab = 'breath' | 'messages' | 'sound' | 'games';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'breath',   label: 'تنفس' },
-  { id: 'messages', label: 'كلمات تهدئة' },
-  { id: 'sound',    label: 'أصوات' },
-  { id: 'games',    label: '🎮 ألعاب' },
+const TABS: { id: Tab; labelKey: TranslationKey }[] = [
+  { id: 'breath',   labelKey: 'calm.tab.breath' },
+  { id: 'messages', labelKey: 'calm.tab.messages' },
+  { id: 'sound',    labelKey: 'calm.tab.sounds' },
+  { id: 'games',    labelKey: 'calm.tab.games' },
 ];
 
 export const CalmPage: FC = () => {
   const [tab, setTab] = useState<Tab>('breath');
   const history = useHistory();
+  const { t } = useLanguage();
 
   return (
     <IonPage>
@@ -31,8 +34,8 @@ export const CalmPage: FC = () => {
           fontFamily, direction: 'rtl',
         }}>
           <div style={{ padding: '20px 20px 6px' }}>
-            <div style={{ fontSize: 28, fontWeight: 800, color: colors.white }}>مركز التهدئة</div>
-            <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.85)', marginTop: 4 }}>أنت بأمان. تنفس معي.</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: colors.white }}>{t('calm.title')}</div>
+            <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.85)', marginTop: 4 }}>{t('calm.subtitle')}</div>
           </div>
 
           {/* تابات */}
@@ -41,19 +44,19 @@ export const CalmPage: FC = () => {
             background: 'rgba(255,255,255,0.15)',
             borderRadius: 12, padding: 3,
           }}>
-            {TABS.map((t) => (
+            {TABS.map((it) => (
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
+                key={it.id}
+                onClick={() => setTab(it.id)}
                 style={{
                   flex: 1, padding: '10px 2px', borderRadius: 10,
                   border: 'none', cursor: 'pointer',
-                  background: tab === t.id ? colors.white : 'transparent',
-                  color: tab === t.id ? colors.primaryDark : 'rgba(255,255,255,0.85)',
+                  background: tab === it.id ? colors.white : 'transparent',
+                  color: tab === it.id ? colors.primaryDark : 'rgba(255,255,255,0.85)',
                   fontSize: 15, fontWeight: 700, fontFamily,
                   transition: 'all 0.2s',
                 }}
-              >{t.label}</button>
+              >{t(it.labelKey)}</button>
             ))}
           </div>
 
@@ -83,8 +86,8 @@ export const CalmPage: FC = () => {
                     <Icon name="snake" size={28} color={colors.white} />
                   </div>
                   <div style={{ textAlign: 'right', flex: 1 }}>
-                    <div style={{ fontSize: 18, fontWeight: 800 }}>🐍 لعبة الثعبان</div>
-                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>كلاسيكية ممتعة للتشتيت اللطيف</div>
+                    <div style={{ fontSize: 18, fontWeight: 800 }}>🐍 {t('calm.game.snake')}</div>
+                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>{t('calm.game.snake.desc')}</div>
                   </div>
                 </button>
 
@@ -105,8 +108,8 @@ export const CalmPage: FC = () => {
                     <Icon name="memory" size={28} color={colors.white} />
                   </div>
                   <div style={{ textAlign: 'right', flex: 1 }}>
-                    <div style={{ fontSize: 18, fontWeight: 800 }}>🧠 لعبة الذاكرة</div>
-                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>اعثر على الأزواج المتطابقة</div>
+                    <div style={{ fontSize: 18, fontWeight: 800 }}>🧠 {t('calm.game.memory')}</div>
+                    <div style={{ fontSize: 14, opacity: 0.85, marginTop: 2 }}>{t('calm.game.memory.desc')}</div>
                   </div>
                 </button>
               </div>

@@ -6,9 +6,19 @@ import { LeafletMap } from '../components/map/LeafletMap';
 import { ShelterListItem } from '../components/map/ShelterListItem';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useShelters } from '../hooks/useShelters';
+import { useLanguage } from '../context/LanguageContext';
+import type { AppLang } from '../types/profile';
 import { colors, fontFamily } from '../theme/tokens';
 
-const sourceLabel = (s: ReturnType<typeof useShelters>['source']): string => {
+const sourceLabel = (s: ReturnType<typeof useShelters>['source'], lang: AppLang): string => {
+  if (lang === 'he') {
+    switch (s) {
+      case 'osm':       return '📍 מ-OpenStreetMap — מקומות אמיתיים';
+      case 'firestore': return '🏫 ממסד הנתונים של בית הספר';
+      case 'fallback':  return '⚠️ נתונים לדוגמה (אין חיבור)';
+      default:          return 'מחפש...';
+    }
+  }
   switch (s) {
     case 'osm':       return '📍 من OpenStreetMap — أماكن حقيقيّة';
     case 'firestore': return '🏫 من قاعدة بيانات المدرسة';
@@ -21,6 +31,7 @@ export const MapPage: FC = () => {
   const { coords, refresh } = useGeolocation();
   const { shelters, loading, source } = useShelters(coords?.lat, coords?.lng);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { lang } = useLanguage();
 
   return (
     <IonPage>
@@ -34,11 +45,13 @@ export const MapPage: FC = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
           }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: colors.text }}>أقرب الملاجئ الآمنة</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: colors.text }}>
+                {lang === 'he' ? 'המקלטים הקרובים' : 'أقرب الملاجئ الآمنة'}
+              </div>
               <div style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
                 {loading
-                  ? '🔍 جاري البحث عن أماكن حقيقيّة قرب موقعك...'
-                  : `${shelters.length} موقع • ${sourceLabel(source)}`}
+                  ? (lang === 'he' ? '🔍 מחפש מקומות אמיתיים בקרבת מיקומך...' : '🔍 جاري البحث عن أماكن حقيقيّة قرب موقعك...')
+                  : `${shelters.length} ${lang === 'he' ? 'מיקומים' : 'موقع'} • ${sourceLabel(source, lang)}`}
               </div>
               {coords && (
                 <div style={{ fontSize: 10, color: colors.textLight, marginTop: 2, direction: 'ltr', textAlign: 'right' }}>

@@ -11,6 +11,7 @@ import {
   signInWithEmail, requestOtp, authErrorMessage,
 } from '../../api/authApi';
 import { useToast } from '../../hooks/useToast';
+import { useLanguage } from '../../context/LanguageContext';
 import { toE164 } from '../../helpers/formatters';
 import { isValidIsraeliPhone } from '../../helpers/validators';
 import { colors, fontFamily } from '../../theme/tokens';
@@ -32,15 +33,16 @@ export const LoginPage: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const history = useHistory();
   const toast = useToast();
+  const { t, lang, setLang } = useLanguage();
 
   const submitEmail = async () => {
     setError(null);
-    if (!email.includes('@')) { setError('أدخل بريداً صحيحاً'); return; }
-    if (password.length < 6) { setError('كلمة المرور 6 أحرف على الأقل'); return; }
+    if (!email.includes('@')) { setError(lang === 'he' ? 'הזן דוא"ל תקין' : 'أدخل بريداً صحيحاً'); return; }
+    if (password.length < 6) { setError(lang === 'he' ? 'הסיסמה חייבת להכיל לפחות 6 תווים' : 'كلمة المرور 6 أحرف على الأقل'); return; }
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      toast.success('مرحباً بعودتك');
+      toast.success(lang === 'he' ? 'ברוך שובך' : 'مرحباً بعودتك');
       history.replace('/tabs/home');
     } catch (err) {
       const msg = authErrorMessage((err as FirebaseError).code || '');
@@ -54,7 +56,7 @@ export const LoginPage: FC = () => {
   const submitPhone = async () => {
     setError(null);
     if (!isValidIsraeliPhone(phone)) {
-      const msg = 'رقم الهاتف غير صحيح. مثال: 0501234567';
+      const msg = lang === 'he' ? 'מספר טלפון לא חוקי. דוגמה: 0501234567' : 'رقم الهاتف غير صحيح. مثال: 0501234567';
       setError(msg);
       toast.warning(msg);
       return;
@@ -63,7 +65,7 @@ export const LoginPage: FC = () => {
     try {
       const e164 = toE164(phone, 'IL');
       window.__sanadConfirmation = await requestOtp(e164);
-      toast.info('تم إرسال رمز التحقّق');
+      toast.info(lang === 'he' ? 'קוד האימות נשלח' : 'تم إرسال رمز التحقّق');
       history.push('/auth/otp');
     } catch (err) {
       const msg = authErrorMessage((err as FirebaseError).code || '');
@@ -92,8 +94,30 @@ export const LoginPage: FC = () => {
             }}>
               <Icon name="shield" size={42} color={colors.white} />
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: colors.text, marginTop: 14 }}>نبض</div>
-            <div style={{ fontSize: 13, color: colors.textMuted }}>تطبيق الطوارئ المدرسية</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: colors.text, marginTop: 14 }}>{t('app.name')}</div>
+            <div style={{ fontSize: 13, color: colors.textMuted }}>
+              {lang === 'he' ? 'אפליקציית חירום בית-ספרית' : 'تطبيق الطوارئ المدرسية'}
+            </div>
+
+            {/* مبدّل اللغة */}
+            <div style={{
+              display: 'inline-flex', gap: 4, marginTop: 12, padding: 3,
+              background: colors.bgCard, borderRadius: 50,
+              border: `1.5px solid ${colors.bgDark}`,
+            }}>
+              {(['ar', 'he'] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => { void setLang(l); }}
+                  style={{
+                    padding: '5px 14px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                    background: lang === l ? colors.primary : 'transparent',
+                    color: lang === l ? colors.white : colors.textMuted,
+                    fontFamily, fontSize: 12, fontWeight: 700,
+                  }}
+                >{t(l === 'ar' ? 'lang.ar' : 'lang.he')}</button>
+              ))}
+            </div>
           </div>
 
           {/* اختيار الطريقة */}
@@ -101,20 +125,24 @@ export const LoginPage: FC = () => {
             display: 'flex', background: colors.bgCard, borderRadius: 14,
             padding: 4, border: `1.5px solid ${colors.bgDark}`,
           }}>
-            <TabBtn active={method === 'email'} onClick={() => setMethod('email')}>📧 البريد</TabBtn>
-            <TabBtn active={method === 'phone'} onClick={() => setMethod('phone')}>📱 الهاتف</TabBtn>
+            <TabBtn active={method === 'email'} onClick={() => setMethod('email')}>
+              📧 {lang === 'he' ? 'דוא"ל' : 'البريد'}
+            </TabBtn>
+            <TabBtn active={method === 'phone'} onClick={() => setMethod('phone')}>
+              📱 {lang === 'he' ? 'טלפון' : 'الهاتف'}
+            </TabBtn>
           </div>
 
           {/* النموذج */}
           {method === 'email' ? (
             <>
               <Field
-                label="البريد الإلكتروني" type="email"
+                label={t('auth.email')} type="email"
                 value={email} onChange={setEmail}
                 placeholder="name@example.com"
               />
               <Field
-                label="كلمة المرور" type="password"
+                label={t('auth.password')} type="password"
                 value={password} onChange={setPassword}
                 placeholder="••••••••"
               />
@@ -122,13 +150,15 @@ export const LoginPage: FC = () => {
           ) : (
             <>
               <Field
-                label="رقم الجوال" type="tel"
+                label={t('profile.field.phone')} type="tel"
                 value={phone} onChange={setPhone}
                 placeholder="050 123 4567"
               />
               <div id="recaptcha-container" />
               <div style={{ fontSize: 11, color: colors.warning, padding: '4px 8px' }}>
-                ⚠️ تسجيل الهاتف يحتاج تفعيل خطة Blaze في Firebase
+                {lang === 'he'
+                  ? '⚠️ הרשמת טלפון דורשת תוכנית Blaze ב-Firebase'
+                  : '⚠️ تسجيل الهاتف يحتاج تفعيل خطة Blaze في Firebase'}
               </div>
             </>
           )}
@@ -144,20 +174,26 @@ export const LoginPage: FC = () => {
             onClick={method === 'email' ? submitEmail : submitPhone}
             disabled={loading}
           >
-            {loading ? 'جاري...' : method === 'email' ? 'تسجيل الدخول' : 'إرسال رمز التحقّق'}
+            {loading
+              ? t('common.loading')
+              : method === 'email'
+                ? t('auth.signin')
+                : (lang === 'he' ? 'שלח קוד אימות' : 'إرسال رمز التحقّق')}
           </PillButton>
 
           {method === 'email' && (
             <div style={{ textAlign: 'center', fontSize: 13, color: colors.textMuted }}>
-              ليس لديك حساب؟ {' '}
+              {t('auth.no.account')} {' '}
               <Link to="/auth/register" style={{ color: colors.primary, fontWeight: 700 }}>
-                أنشئ حساباً
+                {t('auth.signup')}
               </Link>
             </div>
           )}
 
           <p style={{ fontSize: 11, color: colors.textMuted, textAlign: 'center', marginTop: 6 }}>
-            بتسجيل الدخول، توافق على شروط الاستخدام وسياسة الخصوصية
+            {lang === 'he'
+              ? 'בכניסה אתה מסכים לתנאי השימוש ולמדיניות הפרטיות'
+              : 'بتسجيل الدخول، توافق على شروط الاستخدام وسياسة الخصوصية'}
           </p>
         </div>
       </IonContent>

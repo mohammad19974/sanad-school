@@ -14,6 +14,7 @@ import {
 import { Route, Redirect, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import { useProfileContext } from '../context/ProfileContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useChatThreads } from '../hooks/useChatThreads';
 
 import { LoginPage } from '../pages/auth/LoginPage';
@@ -47,12 +48,14 @@ import { colors, fontFamily } from '../theme/tokens';
 // تابات الطالب
 // ════════════════════════════════════════════════════
 
-const STUDENT_TABS: { id: string; label: string; icon: IconName; href: string }[] = [
-  { id: 'home',    label: 'الرئيسية', icon: 'shield', href: '/tabs/home' },
-  { id: 'map',     label: 'الخريطة',  icon: 'map',    href: '/tabs/map' },
-  { id: 'calm',    label: 'تهدئة',    icon: 'calm',   href: '/tabs/calm' },
-  { id: 'contact', label: 'تواصل',    icon: 'phone',  href: '/tabs/contact' },
-  { id: 'profile', label: 'حسابي',    icon: 'user',   href: '/tabs/profile' },
+import type { TranslationKey } from '../i18n/translations';
+
+const STUDENT_TABS: { id: string; labelKey: TranslationKey; icon: IconName; href: string }[] = [
+  { id: 'home',    labelKey: 'tab.home',    icon: 'shield', href: '/tabs/home' },
+  { id: 'map',     labelKey: 'tab.map',     icon: 'map',    href: '/tabs/map' },
+  { id: 'calm',    labelKey: 'tab.calm',    icon: 'calm',   href: '/tabs/calm' },
+  { id: 'contact', labelKey: 'tab.contact', icon: 'phone',  href: '/tabs/contact' },
+  { id: 'profile', labelKey: 'tab.profile', icon: 'user',   href: '/tabs/profile' },
 ];
 
 // خريطة المسارات الفرعيّة → التاب الذي يبقى مُحدَّداً
@@ -75,6 +78,7 @@ const tabFromPath = (path: string, prefix: string): string => {
 
 const StudentTabBar: FC = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const selected = tabFromPath(location.pathname, '/tabs') || 'home';
   return (
     <IonTabBar
@@ -87,10 +91,10 @@ const StudentTabBar: FC = () => {
         fontFamily,
       }}
     >
-      {STUDENT_TABS.map((t) => (
-        <IonTabButton key={t.id} tab={t.id} href={t.href}>
-          <Icon name={t.icon} size={22} />
-          <IonLabel>{t.label}</IonLabel>
+      {STUDENT_TABS.map((tab) => (
+        <IonTabButton key={tab.id} tab={tab.id} href={tab.href}>
+          <Icon name={tab.icon} size={22} />
+          <IonLabel>{t(tab.labelKey)}</IonLabel>
         </IonTabButton>
       ))}
     </IonTabBar>

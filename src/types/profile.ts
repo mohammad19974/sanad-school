@@ -18,10 +18,14 @@ export interface Contact {
   phone: string;
 }
 
+export type AppLang = 'ar' | 'he';
+
 export interface AccessibilitySettings {
   voiceInput: boolean;
   notify: boolean;
   largeText: boolean;
+  /** لغة الواجهة — العربية (افتراضي) أو العبرية */
+  lang?: AppLang;
 }
 
 export interface StudentProfile {
@@ -74,6 +78,6 @@ export const emptyProfile = (uid: string, role: UserRole = 'student'): StudentPr
   allergies: '',
   guardian: { name: '', phone: '' },
   schoolCoordinator: { name: '', phone: '' },
-  settings: { voiceInput: true, notify: true, largeText: false },
+  settings: { voiceInput: true, notify: true, largeText: false, lang: 'ar' },
   staffTitle: '',
 });

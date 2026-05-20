@@ -5,6 +5,7 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { OfflineBanner } from './components/OfflineBanner';
 import { LargeTextEffect } from './components/LargeTextEffect';
@@ -18,8 +19,10 @@ const App: FC = () => (
     <OfflineBanner />
     <AuthProvider>
       <ProfileProvider>
-        <LargeTextEffect />
-        <AppRoutes />
+        <LanguageProvider>
+          <LargeTextEffect />
+          <AppRoutes />
+        </LanguageProvider>
       </ProfileProvider>
     </AuthProvider>
   </IonApp>

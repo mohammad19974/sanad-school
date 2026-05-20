@@ -7,31 +7,34 @@ import { useHistory } from 'react-router-dom';
 import { ContactCard, type EmergencyContact } from '../components/contact/ContactCard';
 import { Icon } from '../ui/Icon';
 import { useProfileContext } from '../context/ProfileContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../hooks/useToast';
 import { useVoiceTrigger } from '../hooks/useVoiceTrigger';
 import { colors, fontFamily } from '../theme/tokens';
-
-const STATIC_CONTACTS: EmergencyContact[] = [
-  { name: 'الإطفاء والإنقاذ', number: '102', icon: 'fire',      color: '#E53935', desc: 'الحرائق والإنقاذ' },
-  { name: 'نجمة داوود الحمراء', number: '101', icon: 'ambulance', color: '#FF7043', desc: 'الإسعاف الطبي' },
-  { name: 'الشرطة',           number: '100', icon: 'police',    color: '#1565C0', desc: 'الأمن والنجدة' },
-  { name: 'الجبهة الداخلية',  number: '104', icon: 'shield',    color: '#7B6FAD', desc: 'إنذارات الطوارئ المدنية' },
-];
 
 const LISTEN_DURATION_MS = 10_000;
 
 export const ContactPage: FC = () => {
   const { profile } = useProfileContext();
+  const { t, lang } = useLanguage();
   const toast = useToast();
   const history = useHistory();
   const [listening, setListening] = useState(false);
 
+  const STATIC_CONTACTS: EmergencyContact[] = [
+    { name: t('contact.fire'),      number: '102', icon: 'fire',      color: '#E53935', desc: t('contact.fire.desc') },
+    { name: t('contact.ambulance'), number: '101', icon: 'ambulance', color: '#FF7043', desc: t('contact.ambulance.desc') },
+    { name: t('contact.police'),    number: '100', icon: 'police',    color: '#1565C0', desc: t('contact.police.desc') },
+    { name: t('contact.civil'),     number: '104', icon: 'shield',    color: '#7B6FAD', desc: t('contact.civil.desc') },
+  ];
+
   // hook التفعيل الصوتي — يُشتغل فقط أثناء الضغط
+  const speechLang = lang === 'he' ? 'he-IL' : 'ar-SA';
   const voice = useVoiceTrigger(listening, () => {
-    toast.success('🎤 تم اكتشاف نداء نجدة — جاري فتح SOS', { duration: 3000 });
+    toast.success(lang === 'he' ? '🎤 זוהתה קריאת הצלה — פותח SOS' : '🎤 تم اكتشاف نداء نجدة — جاري فتح SOS', { duration: 3000 });
     setListening(false);
     history.push('/tabs/home?openSos=1'); // home سيفتح المودال
-  });
+  }, speechLang);
 
   const startListening = () => {
     if (listening) {
@@ -39,25 +42,30 @@ export const ContactPage: FC = () => {
       return;
     }
     setListening(true);
-    toast.info('🎤 يستمع 10 ثوانٍ... قُل "نجدة" لطلب المساعدة', { duration: 3500 });
+    toast.info(
+      lang === 'he'
+        ? '🎤 מקשיב 10 שניות... אמור "הצילו" לבקשת עזרה'
+        : '🎤 يستمع 10 ثوانٍ... قُل "نجدة" لطلب المساعدة',
+      { duration: 3500 },
+    );
     window.setTimeout(() => setListening(false), LISTEN_DURATION_MS);
   };
 
   const personal: EmergencyContact[] = [];
   if (profile?.guardian.phone) {
     personal.push({
-      name: profile.guardian.name || 'ولي الأمر',
+      name: profile.guardian.name || t('contact.guardian'),
       number: profile.guardian.phone,
       icon: 'family', color: colors.primary,
-      desc: 'جهة تواصل طارئة',
+      desc: t('contact.guardian.desc'),
     });
   }
   if (profile?.schoolCoordinator.phone) {
     personal.push({
-      name: profile.schoolCoordinator.name || 'منسّق الطوارئ المدرسي',
+      name: profile.schoolCoordinator.name || t('contact.school'),
       number: profile.schoolCoordinator.phone,
       icon: 'user', color: '#7B6FAD',
-      desc: 'المدرسة والإرشاد',
+      desc: t('contact.school.desc'),
     });
   }
 
@@ -71,8 +79,8 @@ export const ContactPage: FC = () => {
           background: colors.bg, fontFamily, direction: 'rtl',
         }}>
           <div style={{ padding: '20px 20px 6px' }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: colors.text }}>التواصل الفوري</div>
-            <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>اتصل بلمسة واحدة</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: colors.text }}>{t('contact.title')}</div>
+            <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 2 }}>{t('contact.subtitle')}</div>
           </div>
 
           <div style={{
@@ -101,9 +109,7 @@ export const ContactPage: FC = () => {
               }}>
               <Icon name="mic" size={24} color={colors.white} />
               <span style={{ fontSize: 16, fontWeight: 700, color: colors.white }}>
-                {listening
-                  ? '🔴 يستمع الآن... قُل "نجدة"'
-                  : 'اضغط وتكلم — نبض يستمع'}
+                {listening ? t('contact.voice.listen') : t('contact.voice')}
               </span>
             </button>
 
@@ -116,7 +122,7 @@ export const ContactPage: FC = () => {
                 fontFamily,
               }}>
                 <div style={{ fontSize: 10, color: colors.textMuted, marginBottom: 4 }}>
-                  📝 سُمع:
+                  {t('contact.voice.heard')}
                 </div>
                 <div style={{ fontSize: 14, color: colors.text, fontWeight: 600 }}>
                   {voice.lastTranscript}
@@ -131,7 +137,7 @@ export const ContactPage: FC = () => {
                 background: `${colors.warning}15`, color: colors.warning,
                 fontSize: 12, fontFamily, textAlign: 'center',
               }}>
-                ⚠️ متصفّحك لا يدعم التعرّف الصوتي
+                {t('contact.voice.unsupported')}
               </div>
             )}
             {voice.status === 'denied' && listening && (
@@ -140,7 +146,7 @@ export const ContactPage: FC = () => {
                 background: `${colors.danger}15`, color: colors.danger,
                 fontSize: 12, fontFamily, textAlign: 'center',
               }}>
-                ⚠️ إذن المايكروفون مرفوض — فعّله من إعدادات المتصفّح
+                {t('contact.voice.denied')}
               </div>
             )}
           </div>

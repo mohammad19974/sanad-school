@@ -2,6 +2,7 @@
 
 import type { FC } from 'react';
 import { Icon, type IconName } from '../../ui/Icon';
+import { useLanguage } from '../../context/LanguageContext';
 import { colors, fontFamily } from '../../theme/tokens';
 
 interface Action {
@@ -18,10 +19,11 @@ interface Props {
 }
 
 export const QuickActions: FC<Props> = ({ onAmbulance, onShelter, onCalm }) => {
+  const { t } = useLanguage();
   const actions: Action[] = [
-    { icon: 'ambulance', label: 'إسعاف',     color: colors.danger,  onClick: onAmbulance },
-    { icon: 'map',       label: 'ملجأ قريب', color: colors.primary, onClick: onShelter },
-    { icon: 'calm',      label: 'تهدئة',     color: '#7B6FAD',      onClick: onCalm },
+    { icon: 'ambulance', label: t('home.quick.ambulance'), color: colors.danger,  onClick: onAmbulance },
+    { icon: 'map',       label: t('home.quick.shelter'),   color: colors.primary, onClick: onShelter },
+    { icon: 'calm',      label: t('home.quick.calm'),      color: '#7B6FAD',      onClick: onCalm },
   ];
 
   return (
